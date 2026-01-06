@@ -33,15 +33,10 @@ export default function Preserve() {
          style={{ 
            background: 'linear-gradient(135deg, #f5ebe0 0%, #e3d5ca 50%, #d6ccc2 100%)',
          }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&display=swap');
-        
-        * {
-          font-family: 'Crimson Pro', serif;
-        }
+      <style>{`        
         
         .heading-font {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'Inter', serif;
           font-weight: 700;
         }
         
@@ -197,9 +192,9 @@ export default function Preserve() {
       
       <div className="w-full max-w-3xl paper-texture rounded-2xl p-8 sm:p-12 animate-fade-in-up">
         <div className="mb-10">
-          <h1 className="heading-font text-5xl sm:text-6xl text-[#3e2723] mb-2 tracking-tight">
+          <h2 className="heading-font text-5xl sm:text-6xl text-[#3e2723] mb-2 tracking-tight">
             Every story matters. Save it.
-          </h1>
+          </h2>
         </div>
         
         <form className="space-y-6">
@@ -209,7 +204,7 @@ export default function Preserve() {
               <Label htmlFor="title" className="label-text">Title</Label>
               <Input 
                 id="title" 
-                placeholder="Value" 
+                placeholder="Name of the Title" 
                 className="input-field h-11"
               />
             </div>
