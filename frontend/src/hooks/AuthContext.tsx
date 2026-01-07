@@ -12,6 +12,12 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
+// Inside AuthContext.tsx
+const user = {
+  name: "Guest User",
+  profileImage: "https://i.pravatar.cc/150?u=a042581f4e29026704d" // A random fake avatar
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
