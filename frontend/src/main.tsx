@@ -6,11 +6,16 @@
  */
 
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import App from "./App";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AboutUs from "./pages/AboutUs"; // About Us page (create this file)
+
 
 function start() {
   const root = createRoot(document.getElementById("root")!);
-  root.render(<App />);
+  root.render(
+    <App />
+  );
 }
 
 if (document.readyState === "loading") {
