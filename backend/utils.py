@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import Request, HTTPException
-import firebase_admin, os
+import firebase_admin, os, langid
 from firebase_admin import credentials, auth, firestore
 from dotenv import load_dotenv
 from typing import List, Optional
@@ -8,6 +8,12 @@ from typing import List, Optional
 load_dotenv()
 
 db: Optional[firestore.client] | None = None
+
+lang_rarity: dict[str, float] = {
+    "si" : 0.9,
+    "ta" : 0.8,
+    "en" : 0.1
+}
 
 def verify_firebase_token(request: Request) -> dict | None:
     auth_header = request.headers.get("Authorization")
@@ -50,20 +56,52 @@ def get_db() -> firestore.client:
     return db
 
 
-def calculate_risk_score_and_level(text: str, language: str, digital_refs: int) -> List[int | str]:
+# text character length
+def risk_based_on_length(text: str) -> List[float]:
+    word_count = len(text.split())
+    
+    if word_count <= 5:
+        risk = 0.9
+    elif word_count <= 15:
+        risk = 0.7
+    elif word_count <= 50:
+        risk = 0.4
+    else:
+        risk = 0.2
+    
+    return [word_count, risk]
+
+
+# language detection
+def language_detection(text: str) -> float:
+    lang, conf = langid.classify(text)
+    return lang_rarity.get(lang, 0.0)
+
+
+# Count no of digital references
+def digital_reference_rarity(text: str, max_results: int = 20) -> float:
+    return 0.0
+
+
+def calculate_risk_score_and_level(text: str) -> List[float | str]:
     score = 0
     risk_level = ""
 
-    if len(text) < 50:
-        score += 3
-    if language == "rare":
-        score += 3
-    if digital_refs < 5:
-        score += 2
+    # Length risk
+    _, length_risk = risk_based_on_length(text)
+    score += length_risk
 
-    if score >= 7:
+    # Language rarity
+    lang_risk = language_detection(text)
+    score += lang_risk
+
+    # Digital references
+    digital_risk = digital_reference_rarity(text)
+    score += digital_risk
+
+    if score >= 2.0:
         risk_level = "High"
-    elif score >= 4:
+    elif score >= 1.0:
         risk_level = "Medium"
     else:
         risk_level = "Low"
