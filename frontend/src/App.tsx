@@ -6,29 +6,16 @@ import {
   Navigate,
 } from "react-router-dom";
 // import { ToastContainer } from 'react-toastify';
-
 import Home from "./pages/Home";
 import About from "./pages/AboutUs";
-// import ContactUs from "./pages/ContactUs";
-// import UserProfile from "./pages/UserProfile";
 import Login from "./pages/Login";
-// import SignUp from "./components/SignUp";
-
-// import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFoundPage from "./pages/NotFoundPage";
-import Preloader from "./components/Preloader";
-// import { useAuth } from "./hooks/AuthContext";
-// import ProtectedRoute from "./components/ProtectedRoute";
-
-// import AdminLayout from "./layout/AdminLayout";
 import RootLayout from "./layout/RootLayout";
+import { useAuth } from "./hooks/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  // const { isAuthenticated, loading } = useAuth();
-
-  // if (loading) {
-  //   return <Preloader />;
-  // }
+  const { user } = useAuth()!;
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -36,30 +23,12 @@ function App() {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
-          {/* <Route path="cars" element={<CarList />} />
-          <Route path="car-details/:id" element={<CarDetails />} />
-          <Route path="contact-us" element={<ContactUs />} /> */}
-
           <Route
             path="login"
-            element={
-              true ? <Login /> : <Navigate to="/dashboard" />
-            }
+            element={!!user ? <Navigate to="/" /> : <Login /> }
           />
-          {/* <Route
-            path="register"
-            element={
-              !isAuthenticated ? <SignUp /> : <Navigate to="/dashboard" />
-            }
-          /> */}
-
-          {/* <Route element={<ProtectedRoute />}>
-            <Route path="user" element={<UserProfile />} />
-            <Route path="/dashboard" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-            </Route>
-          </Route>
-          <Route path="*" element={<NotFoundPage />} /> */}
+          <Route element={<ProtectedRoute />}></Route>
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </>
     )
