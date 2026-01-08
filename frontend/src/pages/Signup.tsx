@@ -1,26 +1,55 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase";
+import type { SubmitHandler } from "react-hook-form"
+
+
+type FormInputs = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 const Signup = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<FormInputs>();
+
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    setError("");
+    if (data.password !== data.confirmPassword) {
+      setError("Passwords do not match!");
       return;
     }
-    console.log({ email, password });
-    // signup logic here
+
+    try {
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      navigate("/dashboard"); // Redirect after successful signup
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to create an account.");
+    }
   };
 
-  const handleGoogleSignup = () => {
-    console.log("Google signup clicked");
-    // google auth logic here
+  const handleGoogleSignup = async () => {
+    setError("");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate("/dashboard"); // Redirect after successful signup
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Google signup failed.");
+    }
   };
 
   return (
@@ -32,19 +61,28 @@ const Signup = () => {
           Create Rune Account
         </h2>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm text-center">
+            {error}
+          </div>
+        )}
+
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email (Username) */}
           <div>
             <label className="block text-sm mb-1 text-[#8b3f1f]">Email Address</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email", { required: "Email is required" })}
               placeholder="name@example.com"
-              className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
-              required
+              className={`w-full px-4 py-2 rounded-lg border ${
+                errors.email ? "border-red-500" : "border-[#8b3f1f]"
+              } focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]`}
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -53,11 +91,17 @@ const Signup = () => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
                 placeholder="Create a password"
-                className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
-                required
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  errors.password ? "border-red-500" : "border-[#8b3f1f]"
+                } focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]`}
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -66,6 +110,9 @@ const Signup = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Confirm Password */}
@@ -73,20 +120,31 @@ const Signup = () => {
             <label className="block text-sm mb-1 text-[#8b3f1f]">Confirm Password</label>
             <input
               type={showPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (val: string) => {
+                  if (watch('password') != val) {
+                    return "Your passwords do no match";
+                  }
+                },
+              })}
               placeholder="Confirm your password"
-              className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
-              required
+              className={`w-full px-4 py-2 rounded-lg border ${
+                errors.confirmPassword ? "border-red-500" : "border-[#8b3f1f]"
+              } focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]`}
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
+            )}
           </div>
 
           {/* Signup button */}
           <button
             type="submit"
-            className="w-full bg-[#8b3f1f] text-white py-2 rounded-lg font-semibold hover:bg-[#70301a] transition-all"
+            disabled={isSubmitting}
+            className="w-full bg-[#8b3f1f] text-white py-2 rounded-lg font-semibold hover:bg-[#70301a] transition-all disabled:opacity-50"
           >
-            Create Account
+            {isSubmitting ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
