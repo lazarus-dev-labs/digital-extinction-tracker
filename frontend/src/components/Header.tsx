@@ -11,7 +11,7 @@ import { useAuth } from "../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const { isAuthenticated, logout } = useAuth(); // get auth state and logout function
+  const { user, logout } = useAuth()!; // get auth state and logout function
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,9 +22,11 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm relative z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-
         {/* Logo */}
-        <div className="font-bold text-xl cursor-pointer" onClick={() => navigate("/")}>
+        <div
+          className="font-bold text-xl cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           Rune
         </div>
 
@@ -56,7 +58,14 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="flex gap-2">
-          {!isAuthenticated ? (
+          {!!user ? (
+            <button
+              onClick={handleLogout}
+              className="border border-[#8b3f1f] px-4 py-1 rounded hover:bg-[#8b3f1f] hover:text-white transition"
+            >
+              Logout
+            </button>
+          ) : (
             <>
               <button
                 onClick={() => navigate("/login")}
@@ -71,13 +80,6 @@ const Header = () => {
                 Signup
               </button>
             </>
-          ) : (
-            <button
-              onClick={handleLogout}
-              className="border border-[#8b3f1f] px-4 py-1 rounded hover:bg-[#8b3f1f] hover:text-white transition"
-            >
-              Logout
-            </button>
           )}
         </div>
       </div>

@@ -1,28 +1,55 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import type { ReactNode } from "react";
+import type { User } from "firebase/auth";
+import { auth } from "@/firebase";
 
 interface AuthContextType {
-  isAuthenticated: boolean;
-  login: () => void;
+  user: User | null;
+  setUser: (user: User | null) => void;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  login: () => {},
-  logout: () => {},
-});
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const AuthContext = createContext<AuthContextType | null>(null);
+export const useAuth = () => useContext(AuthContext);
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [auth]);
+
+  const logout = async () => {
+    try {
+      const cred = await signOut(auth);
+      setUser(null);
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
+  const values: AuthContextType = {
+    user,
+    setUser,
+    logout,
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-      {children}
+    <AuthContext.Provider value={values}>
+      {!loading && children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => useContext(AuthContext);
+}

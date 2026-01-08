@@ -3,22 +3,28 @@ import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
+import { useAuth } from "@/hooks/AuthContext";
+import { useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form"
+
+interface LoginFormInputs {
+  username: string;
+  password: string;
+}
 
 const Login = () => {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const [error, setError] = useState<string>("");
+  const { setUser } = useAuth()!;
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
+
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setError("");
     try {
-      const cred = await signInWithEmailAndPassword(auth, username, password);
-      const jwt = await cred.user.getIdToken();
-      console.log(jwt)
+      const cred = await signInWithEmailAndPassword(auth, data.username, data.password);
+      setUser(cred.user);
       navigate("/");
     } catch (err: any) {
       console.error(err);
@@ -30,10 +36,10 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      console.log("Google login success", user);
+      setUser(user)
       navigate("/");
-    } catch (error) {
-      console.error("Google login error", error);
+    } catch (err) {
+      console.error("Google login error", err);
       setError("Failed to login with Google.");
     }
   };
@@ -41,26 +47,25 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f1eb]">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border border-[#8b3f1f]">
-        
-        {/* Title */}
         <h2 className="text-3xl font-bold text-center text-[#8b3f1f] mb-6">
           Login to Rune
         </h2>
 
-        {/* Form */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-5">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Username */}
           <div>
             <label className="block text-sm mb-1 text-[#8b3f1f]">Username</label>
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              {...register("username", { required: "Username is required" })}
               placeholder="Enter username"
               className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
-              required
             />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -69,11 +74,9 @@ const Login = () => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password", { required: "Password is required" })}
                 placeholder="Enter password"
                 className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
-                required
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -82,9 +85,12 @@ const Login = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
           </div>
 
-          {/* Login button */}
+          {/* Login Button */}
           <button
             type="submit"
             className="w-full bg-[#8b3f1f] text-white py-2 rounded-lg font-semibold hover:bg-[#70301a] transition-all"
@@ -109,10 +115,13 @@ const Login = () => {
           Login with Google
         </button>
 
-        {/* Signup link */}
+        {/* Signup Link */}
         <p className="text-center text-sm mt-5 text-gray-600">
           Not signed up yet?{" "}
-          <Link to="/register" className="text-[#8b3f1f] hover:underline font-semibold">
+          <Link
+            to="/register"
+            className="text-[#8b3f1f] hover:underline font-semibold"
+          >
             Sign up
           </Link>
         </p>
