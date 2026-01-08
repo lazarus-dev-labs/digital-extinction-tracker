@@ -50,7 +50,7 @@ const Header = () => {
               <NavigationMenuLink href="#" className="hover:text-[#9F3B0F] transition">Preserve</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="#" className="hover:text-[#9F3B0F] transition">Contact</NavigationMenuLink>
+              <NavigationMenuLink href="/contact" className="hover:text-[#9F3B0F] transition">Contact</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
