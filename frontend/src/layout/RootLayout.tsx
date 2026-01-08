@@ -9,18 +9,18 @@ import Preloader from "../components/Preloader";
 
 function RootLayout() {
     const location = useLocation();
-    const [preload, setPreload] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     // Simulate loading for 2 seconds
     useEffect(() => {
-        const timer = setTimeout(() => setPreload(false), 2000);
+        const timer = setTimeout(() => setLoading(false), 2000);
         return () => clearTimeout(timer);
     }, []);
 
   
   const hideHeaderFooterPaths = [
     "/login",
-    "/register",
+    "/signup",
     "/user",
     // "/transaction",
     "/notfoundpage",
@@ -34,7 +34,7 @@ function RootLayout() {
   );
 
   // Show preloader first
-  if (preload) return <Preloader />;
+  if (loading) return <Preloader />;
 
   return (
     <>
