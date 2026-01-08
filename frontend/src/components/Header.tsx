@@ -66,7 +66,7 @@ const Header = () => {
                 Login
               </button>
               <button
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/signup")}
                 className="bg-[#9F3B0F] text-white px-4 py-1 rounded hover:bg-[#EF9829] transition"
               >
                 Signup

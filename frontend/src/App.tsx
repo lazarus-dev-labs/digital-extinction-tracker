@@ -12,7 +12,7 @@ import About from "./pages/AboutUs";
 // import ContactUs from "./pages/ContactUs";
 // import UserProfile from "./pages/UserProfile";
 import Login from "./pages/Login";
-// import SignUp from "./components/SignUp";
+import Signup from "./pages/Signup";
 
 // import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -46,12 +46,12 @@ function App() {
               true ? <Login /> : <Navigate to="/dashboard" />
             }
           />
-          {/* <Route
-            path="register"
+          <Route
+            path="signup"
             element={
-              !isAuthenticated ? <SignUp /> : <Navigate to="/dashboard" />
+              true ? <Signup /> : <Navigate to="/dashboard" />
             }
-          /> */}
+          />
 
           {/* <Route element={<ProtectedRoute />}>
             <Route path="user" element={<UserProfile />} />
