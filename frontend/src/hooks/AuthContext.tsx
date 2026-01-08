@@ -1,44 +1,55 @@
-import React, { createContext, useContext, useState, type ReactNode } from "react";
-
-interface User {
-  name: string;
-  profileImage: string;
-}
+import { createContext, useState, useEffect, useContext } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import type { ReactNode } from "react";
+import type { User } from "firebase/auth";
+import { auth } from "@/firebase";
 
 interface AuthContextType {
-  isAuthenticated: boolean;
   user: User | null;
-  login: () => void;
+  setUser: (user: User | null) => void;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  user: null,
-  login: () => {},
-  logout: () => {},
-});
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-// Mock user data
-const mockUser: User = {
-  name: "Guest User",
-  profileImage: "https://i.pravatar.cc/150?u=a042581f4e29026704d"
-};
+const AuthContext = createContext<AuthContextType | null>(null);
+export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Return mock user if authenticated, else null
-  const user = isAuthenticated ? mockUser : null;
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+    return () => {
+      unsubscribe();
+    };
+  }, [auth]);
+
+  const logout = async () => {
+    try {
+      const cred = await signOut(auth);
+      setUser(null);
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
+  const values: AuthContextType = {
+    user,
+    setUser,
+    logout,
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
-      {children}
+    <AuthContext.Provider value={values}>
+      {!loading && children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => useContext(AuthContext);
+}
