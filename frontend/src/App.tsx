@@ -13,6 +13,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import RootLayout from "./layout/RootLayout";
 import { useAuth } from "./hooks/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Signup from "./pages/Signup";
 
 function App() {
   const { user } = useAuth()!;
@@ -27,7 +28,13 @@ function App() {
             path="login"
             element={!!user ? <Navigate to="/" /> : <Login /> }
           />
-          <Route element={<ProtectedRoute />}></Route>
+          <Route
+            path="register"
+            element={<Signup/>}
+          />
+          <Route element={<ProtectedRoute />}>
+
+          </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </>
