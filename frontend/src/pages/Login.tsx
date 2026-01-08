@@ -1,21 +1,41 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase";
 
 const Login = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [error, setError] = useState<string>("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({ username, password });
-    // login logic here
+    setError("");
+    try {
+      const cred = await signInWithEmailAndPassword(auth, username, password);
+      const jwt = await cred.user.getIdToken();
+      console.log(jwt)
+      navigate("/");
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to login. Please check your credentials.");
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Google login clicked");
-    // google auth logic here
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      console.log("Google login success", user);
+      navigate("/");
+    } catch (error) {
+      console.error("Google login error", error);
+      setError("Failed to login with Google.");
+    }
   };
 
   return (
@@ -28,6 +48,7 @@ const Login = () => {
         </h2>
 
         {/* Form */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Username */}
           <div>
@@ -74,9 +95,9 @@ const Login = () => {
 
         {/* Divider */}
         <div className="flex items-center my-5">
-          <hr className="flex-grow border-gray-300" />
+          <hr className="grow border-gray-300" />
           <span className="px-3 text-sm text-gray-500">OR</span>
-          <hr className="flex-grow border-gray-300" />
+          <hr className="grow border-gray-300" />
         </div>
 
         {/* Google Login */}
