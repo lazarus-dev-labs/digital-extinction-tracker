@@ -6,11 +6,16 @@
  */
 
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import { AuthProvider } from "./hooks/AuthContext";
+import App from "./App";
 
 function start() {
   const root = createRoot(document.getElementById("root")!);
-  root.render(<App />);
+  root.render(
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
 }
 
 if (document.readyState === "loading") {
