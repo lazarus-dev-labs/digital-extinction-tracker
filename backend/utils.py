@@ -1,19 +1,26 @@
 from typing import List
 from fastapi import Request, HTTPException
-import firebase_admin, os, langid
+import firebase_admin, os, langid, requests
 from firebase_admin import credentials, auth, firestore
 from dotenv import load_dotenv
 from typing import List, Optional
+from google.cloud.firestore_v1 import Client
 
 load_dotenv()
 
-db: Optional[firestore.client] | None = None
 
-lang_rarity: dict[str, float] = {
+API_KEY = os.getenv("GOOGLE_API_KEY")
+SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
+URL = "https://www.googleapis.com/customsearch/v1"
+
+
+LANG_RARITY: dict[str, float] = {
     "si" : 0.9,
     "ta" : 0.8,
     "en" : 0.1
 }
+
+db: Optional[Client] | None = None
 
 def verify_firebase_token(request: Request) -> dict | None:
     auth_header = request.headers.get("Authorization")
@@ -50,7 +57,7 @@ def init_firebase() -> None:
         raise e
 
 
-def get_db() -> firestore.client:
+def get_db() -> Client:
     if db is None:
         raise RuntimeError("Firestore not initialized. Call init_firebase() first.")
     return db
@@ -75,12 +82,42 @@ def risk_based_on_length(text: str) -> List[float]:
 # language detection
 def language_detection(text: str) -> float:
     lang, conf = langid.classify(text)
-    return lang_rarity.get(lang, 0.0)
+    return LANG_RARITY.get(lang, 0.0)
 
 
 # Count no of digital references
-def digital_reference_rarity(text: str, max_results: int = 20) -> float:
-    return 0.0
+def digital_reference_rarity(text: str) -> float:
+    count = 0
+
+    params = {
+        'q': text,
+        'key': API_KEY,
+        'cx': SEARCH_ENGINE_ID,
+        # 'siteSearch': 'wikipedia.org',
+        # 'siteSearchFilter': 'i',
+        # 'cr': 'countryLK'
+        # 'searchType': 'image',
+        # 'dateRestrict': '2016-01-01:2021-12-20',
+        # 'lr': 'lang_en',
+        # 'gl': 'US' 
+    }
+
+    try:    
+        response = requests.get(URL, params=params, timeout=5)
+        results = response.json()
+        items = results['items']
+
+        max_results = min(len(items), 10)
+
+        for item in items[:max_results]:
+            print(item['link'])
+            count += 1
+
+    except Exception as e:
+        print("An Exception occured while counting references", e)
+        raise e
+
+    return count
 
 
 def calculate_risk_score_and_level(text: str) -> List[float | str]:
