@@ -9,10 +9,10 @@ import {
 
 import Home from "./pages/Home";
 import About from "./pages/AboutUs";
-// import ContactUs from "./pages/ContactUs";
+import Contact from "./pages/Contact";
 // import UserProfile from "./pages/UserProfile";
 import Login from "./pages/Login";
-// import SignUp from "./components/SignUp";
+import Signup from "./pages/Signup";
 
 // import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -37,8 +37,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           {/* <Route path="cars" element={<CarList />} />
-          <Route path="car-details/:id" element={<CarDetails />} />
-          <Route path="contact-us" element={<ContactUs />} /> */}
+          <Route path="car-details/:id" element={<CarDetails />} />*/}
+          <Route path="contact" element={<Contact />} /> 
 
           <Route
             path="login"
@@ -46,12 +46,12 @@ function App() {
               true ? <Login /> : <Navigate to="/dashboard" />
             }
           />
-          {/* <Route
-            path="register"
+          <Route
+            path="signup"
             element={
-              !isAuthenticated ? <SignUp /> : <Navigate to="/dashboard" />
+              true ? <Signup /> : <Navigate to="/dashboard" />
             }
-          /> */}
+          />
 
           {/* <Route element={<ProtectedRoute />}>
             <Route path="user" element={<UserProfile />} />

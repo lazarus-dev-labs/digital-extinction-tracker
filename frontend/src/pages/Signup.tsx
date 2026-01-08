@@ -1,41 +1,26 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
-import { useNavigate, Link } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../firebase";
+import { Link } from "react-router-dom";
 
-const Login = () => {
-  const [username, setUsername] = useState<string>("");
+const Signup = () => {
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const [error, setError] = useState<string>("");
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
-    try {
-      const cred = await signInWithEmailAndPassword(auth, username, password);
-      const jwt = await cred.user.getIdToken();
-      console.log(jwt)
-      navigate("/");
-    } catch (err: any) {
-      console.error(err);
-      setError("Failed to login. Please check your credentials.");
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
     }
+    console.log({ email, password });
+    // signup logic here
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      console.log("Google login success", user);
-      navigate("/");
-    } catch (error) {
-      console.error("Google login error", error);
-      setError("Failed to login with Google.");
-    }
+  const handleGoogleSignup = () => {
+    console.log("Google signup clicked");
+    // google auth logic here
   };
 
   return (
@@ -44,20 +29,19 @@ const Login = () => {
         
         {/* Title */}
         <h2 className="text-3xl font-bold text-center text-[#8b3f1f] mb-6">
-          Login to Rune
+          Create Rune Account
         </h2>
 
         {/* Form */}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Username */}
+          {/* Email (Username) */}
           <div>
-            <label className="block text-sm mb-1 text-[#8b3f1f]">Username</label>
+            <label className="block text-sm mb-1 text-[#8b3f1f]">Email Address</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
               className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
               required
             />
@@ -71,7 +55,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
+                placeholder="Create a password"
                 className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
                 required
               />
@@ -84,36 +68,49 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Login button */}
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm mb-1 text-[#8b3f1f]">Confirm Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your password"
+              className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
+              required
+            />
+          </div>
+
+          {/* Signup button */}
           <button
             type="submit"
             className="w-full bg-[#8b3f1f] text-white py-2 rounded-lg font-semibold hover:bg-[#70301a] transition-all"
           >
-            Login
+            Create Account
           </button>
         </form>
 
         {/* Divider */}
         <div className="flex items-center my-5">
-          <hr className="grow border-gray-300" />
+          <hr className="flex-grow border-gray-300" />
           <span className="px-3 text-sm text-gray-500">OR</span>
-          <hr className="grow border-gray-300" />
+          <hr className="flex-grow border-gray-300" />
         </div>
 
-        {/* Google Login */}
+        {/* Google Signup */}
         <button
-          onClick={handleGoogleLogin}
+          onClick={handleGoogleSignup}
           className="w-full flex items-center justify-center gap-2 bg-[#F4F1EA] text-[#8b3f1f] py-2 rounded-lg hover:bg-[#f0e6dd] transition-all"
         >
           <FaGoogle />
-          Login with Google
+          Sign up with Google
         </button>
 
-        {/* Signup link */}
+        {/* Login link */}
         <p className="text-center text-sm mt-5 text-gray-600">
-          Not signed up yet?{" "}
-          <Link to="/signup" className="text-[#8b3f1f] hover:underline font-semibold">
-            Sign up
+          Already have an account?{" "}
+          <Link to="/login" className="text-[#8b3f1f] hover:underline font-semibold">
+            Login
           </Link>
         </p>
       </div>
@@ -121,4 +118,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

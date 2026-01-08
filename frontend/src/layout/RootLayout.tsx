@@ -20,7 +20,7 @@ function RootLayout() {
   
   const hideHeaderFooterPaths = [
     "/login",
-    "/register",
+    "/signup",
     "/user",
     // "/transaction",
     "/notfoundpage",
