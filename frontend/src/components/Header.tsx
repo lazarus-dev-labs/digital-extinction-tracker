@@ -64,30 +64,61 @@ const Header = () => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Auth Buttons */}
-        <div className="flex gap-2">
+        {/* Auth Buttons & Profile */}
+        <div className="flex items-center gap-4">
           {!!user ? (
-            <button
-              onClick={handleLogout}
-              className="border border-[#8b3f1f] px-4 py-1 rounded hover:bg-[#8b3f1f] hover:text-white transition"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-3">
+              {/* USER AVATAR BUTTON */}
+              <button
+                onClick={() => navigate("/dashboard")} // Navigates to user dashboard
+                className="group relative flex items-center justify-center"
+              >
+                <div 
+                  className="w-10 h-10 rounded-full bg-[#8b3f1f] flex items-center justify-center 
+                  text-white font-bold border-2 border-white shadow-md overflow-hidden 
+                  transition-transform duration-200 group-hover:scale-110 group-active:scale-95"
+                  title="Go to Dashboard"
+                >
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt="User Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-sm">
+                      {user.email?.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Simple tooltip that shows on hover */}
+                <span className="absolute -bottom-8 scale-0 transition-all rounded bg-gray-800 p-1 text-xs text-white group-hover:scale-100">
+                  Dashboard
+                </span>
+              </button>
+
+              {/* LOGOUT BUTTON */}
+              <button
+                onClick={handleLogout}
+                className="border border-[#8b3f1f] px-4 py-1 rounded text-sm font-medium 
+                text-[#3e2723] hover:bg-[#8b3f1f] hover:text-white transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => navigate("/login")}
-                className="border border-[#8b3f1f] px-4 py-1 rounded hover:bg-[#8b3f1f] hover:text-white transition"
+                className="text-[#3e2723] px-4 py-1 font-medium hover:underline transition"
               >
                 Login
               </button>
               <button
                 onClick={() => navigate("/register")}
-                className="border border-[#8b3f1f] px-4 py-1 rounded hover:bg-[#8b3f1f] hover:text-white transition"
+                className="bg-[#8b3f1f] text-white px-5 py-2 rounded-full text-sm font-medium 
+                hover:bg-[#6f3218] transition shadow-md"
               >
                 Signup
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>

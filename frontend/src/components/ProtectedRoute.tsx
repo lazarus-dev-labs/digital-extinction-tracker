@@ -1,13 +1,30 @@
+// import { Navigate, Outlet } from 'react-router-dom'
+// import { useAuth } from '../hooks/AuthContext'
+
+// const ProtectedRoute = () => {
+//   const { user } = useAuth()!;
+
+//   if (!!user) {
+//     return <Navigate to="/login" replace />
+//   }
+
+//   return <Outlet />
+// }
+
+// export default ProtectedRoute
+
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../hooks/AuthContext'
 
 const ProtectedRoute = () => {
   const { user } = useAuth()!;
 
-  if (!!user) {
+  // If there is NO user, redirect them to login
+  if (!user) {
     return <Navigate to="/login" replace />
   }
 
+  // If there IS a user, show the "Outlet" (the Dashboard/Protected page)
   return <Outlet />
 }
 

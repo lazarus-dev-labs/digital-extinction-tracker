@@ -37,7 +37,7 @@ export default function ProfileSidebar({ user }: { user: User }) {
       <div className="text-center">
         <img
           src={user.image}
-          className="w-32 h-32 mx-auto rounded-2xl border-4 border-amber-400"
+          className="w-32 h-32 mx-auto rounded-full border-2 border-amber-400"
         />
         <h2 className="mt-4 font-serif text-xl text-amber-900">
           {user.name}
