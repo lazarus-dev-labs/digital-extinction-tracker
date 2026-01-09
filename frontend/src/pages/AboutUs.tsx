@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import "../index.css"; // Tailwind
+import AboutusHero from "../assets/Aboutus_hero.png"
 
 export default function AboutUs() {
+    const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#f6f1eb] text-[#8b3f1f]">
         {/* Navbar */}
@@ -25,9 +28,9 @@ export default function AboutUs() {
         </div>
         <div className="relative">
           <img
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+            src= {AboutusHero}
             alt="Heritage"
-            className="rounded-lg w-full md:h-96 h-64 object-cove"
+            className="w-full h-auto max-w-[1200px] object-contain"
           />
         </div>
       </section>
@@ -65,7 +68,9 @@ export default function AboutUs() {
         <p className="text-gray-700 text-lg md:text-xl mb-6">
           One word, one story, one tradition at a time.
         </p>
-        <button className="bg-[#8b3f1f] text-white px-8 py-3 rounded-md text-lg hover:bg-[#732f17] transition-all">
+        <button 
+        onClick={() => navigate("/preserve")}
+        className="bg-[#8b3f1f] text-white px-8 py-3 rounded-md text-lg hover:bg-[#732f17] transition-all">
           Contribute a Story
         </button>
       </section>
