@@ -89,9 +89,9 @@ const Header = () => {
                 </div>
                 
                 {/* Simple tooltip that shows on hover */}
-                <span className="absolute -bottom-8 scale-0 transition-all rounded bg-gray-800 p-1 text-xs text-white group-hover:scale-100">
+                {/* <span className="absolute -bottom-8 scale-0 transition-all rounded bg-gray-800 p-1 text-xs text-white group-hover:scale-100">
                   Dashboard
-                </span>
+                </span> */}
               </button>
 
               {/* LOGOUT BUTTON */}
