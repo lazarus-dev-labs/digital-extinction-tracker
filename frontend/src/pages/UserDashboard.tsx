@@ -1,3 +1,7 @@
+// 
+
+import React from "react";
+import { useAuth } from "../hooks/AuthContext"; // 1. Import your auth hook
 import ProfileSidebar from "@/components/dashboard/ProfileSidebar";
 import ImpactCard from "@/components/dashboard/ImpactCard";
 import AchievementCard from "../components/dashboard/AchievementCard";
@@ -5,46 +9,31 @@ import SavedStories from "../components/dashboard/SavedStories";
 import SourceConnections from "../components/dashboard/SourceConnections";
 
 export default function UserDashboard() {
+  // 2. Get the real user from your AuthContext
+  const { user: authUser } = useAuth()!;
+
+  // 3. Map the Firebase user data to the format your Sidebar expects
   const user = {
-    name: "Minoka Induwara",
-    username: "@Minoka",
-    email: "minoka21@gmail.com",
-    role: "Student",
+    name: authUser?.displayName || "Guardian", // Use Google Name or default
+    username: authUser?.displayName ? `@${authUser.displayName.replace(/\s/g, '')}` : "@Guardian",
+    email: authUser?.email || "No email found",
+    role: "Cultural Member", // Default role
     country: "Sri Lanka",
-    language: "Sinhala",
-    contact: "+94 77 123 4567",
-    image: "/api/placeholder/128/128",
-    reach: "1.23k",
-    contributions: 23,
+    language: "Sinhala / English",
+    contact: authUser?.phoneNumber || "Not provided",
+    // Use Google profile picture, or a fallback placeholder
+    image: authUser?.photoURL || `https://ui-avatars.com/api/?name=${authUser?.email}&background=8b3f1f&color=fff`,
+    reach: "0", 
+    contributions: 0,
   };
 
   const impact = {
-    impact: 15,
-    highRisk: 2,
+    impact: 0,
+    highRisk: 0,
   };
 
-  const stories = [
-    {
-      id: 1,
-      category: "Folklore",
-      title: "The Legend of the Serpent King",
-      date: "12.12.2022",
-      story:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-      isHighRisk: true,
-      isVerified: true,
-    },
-    {
-      id: 2,
-      category: "Mythology",
-      title: "Ancient Guardian Spirits",
-      date: "05.08.2023",
-      story:
-        "Sed do eiusmod tempor incididunt ut labore...",
-      isHighRisk: false,
-      isVerified: true,
-    },
-  ];
+  // Keep these as empty for now until you fetch real stories from Firestore
+  const stories: any[] = []; 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#faf8f5] via-[#f0ebe3] to-[#e8dfd2] p-6">
