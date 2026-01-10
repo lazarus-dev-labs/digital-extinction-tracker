@@ -50,9 +50,11 @@ const Header = () => {
             <NavigationMenuItem>
               <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
               <NavigationMenuContent className="bg-white shadow-lg rounded-lg p-4 flex flex-col gap-2">
-                <NavigationMenuLink href="#">Story</NavigationMenuLink>
-                <NavigationMenuLink href="#">Tradition</NavigationMenuLink>
-                <NavigationMenuLink href="#">Language</NavigationMenuLink>
+                <NavigationMenuLink href="/category/Tradition & Rituals">Tradition & Rituals</NavigationMenuLink>
+                <NavigationMenuLink href="/category/Arts & Performance">Arts & Performance</NavigationMenuLink>
+                <NavigationMenuLink href="/category/Knowledge & Practices">Knowledge & Practices</NavigationMenuLink>
+                <NavigationMenuLink href="/category/Crafts & Industries">Crafts & Industries</NavigationMenuLink>
+                <NavigationMenuLink href="/category/Festivals & Social Events">Festivals & Social Events</NavigationMenuLink>
               </NavigationMenuContent>
             </NavigationMenuItem>
             <NavigationMenuItem>

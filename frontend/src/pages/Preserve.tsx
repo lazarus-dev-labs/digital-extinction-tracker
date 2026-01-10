@@ -106,11 +106,11 @@ export default function Preserve() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
-                  <SelectItem value="folk">Folk Stories</SelectItem>
-                  <SelectItem value="historical">Historical Events</SelectItem>
-                  <SelectItem value="personal">Personal Narratives</SelectItem>
-                  <SelectItem value="cultural">Cultural Practices</SelectItem>
-                  <SelectItem value="myths">Myths & Legends</SelectItem>
+                  <SelectItem value="folk">Tradition & Rituals</SelectItem>
+                  <SelectItem value="historical">Arts & Performance</SelectItem>
+                  <SelectItem value="personal">Knowledge & Practices</SelectItem>
+                  <SelectItem value="cultural">Crafts & Industries</SelectItem>
+                  <SelectItem value="myths">Festivals & Social Events</SelectItem>
                 </SelectContent>
               </Select>
             </div>
