@@ -15,9 +15,9 @@ SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
 URL = "https://www.googleapis.com/customsearch/v1"
 
 LANG_RARITY: dict[str, float] = {
-    "si": 1.0, 
-    "ta": 0.8, 
-    "en": 0.1
+    "sinhala": 1.0, 
+    "tamil": 0.8, 
+    "english": 0.1
 }
 
 db: Optional[Client] | None = None
@@ -84,9 +84,8 @@ def risk_based_on_length(text: str) -> List[float]:
 
 
 # language detection
-def language_detection(text: str) -> float:
-    lang, conf = langid.classify(text)
-    return LANG_RARITY.get(lang, 0.0)
+def language_detection(lang: str) -> float:
+    return LANG_RARITY.get(lang.lower(), 0.0)
 
 
 # Count no of digital references
@@ -194,10 +193,10 @@ def local_similarity_score(text: str) -> float:
     else:
         return 1.0  # completely rare / locally rare
 
-def calculate_extinction_risk(text: str) -> dict:
+def calculate_extinction_risk(text: str, lang: str) -> dict:
 
     _, length_risk = risk_based_on_length(text)
-    lang_risk = language_detection(text)
+    lang_risk = language_detection(lang)
     digital_reference_count, digital_risk = digital_reference_rarity(text)
     local_risk = local_similarity_score(text)
 
