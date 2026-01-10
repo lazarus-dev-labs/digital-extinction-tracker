@@ -1,4 +1,5 @@
 import React from "react";
+import logoImg from "../assets/logo.png";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -22,12 +23,19 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm relative z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        {/* Logo */}
-        <div
-          className="font-bold text-xl cursor-pointer"
+        {/* Actual Logo Image */}
+        <div 
+          className="flex items-center gap-2 cursor-pointer transition-transform hover:scale-105"
           onClick={() => navigate("/")}
         >
-          Rune
+          <img 
+            src={logoImg}
+            alt="Rune Logo" 
+            className="h-20 w-auto object-contain"
+          />
+          {/* <span className="font-['Playfair_Display'] font-bold text-2xl text-[#5D1010] hidden sm:block">
+            Rune
+          </span> */}
         </div>
 
         {/* Navigation Menu */}
@@ -48,10 +56,10 @@ const Header = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="#">Preserve</NavigationMenuLink>
+              <NavigationMenuLink href="/preserve">Preserve</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="#">Contact</NavigationMenuLink>
+              <NavigationMenuLink href="/contact">Contact</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

@@ -74,7 +74,7 @@ const Contact = () => {
           <div className="mt-12">
             <p className="text-sm font-semibold mb-4 uppercase tracking-wider opacity-70">Follow Our Journey</p>
             <div className="flex flex-wrap gap-3">
-              <a href="#" className="p-3 bg-[#f6f1eb]/10 hover:bg-[#f6f1eb] hover:text-[#8b3f1f] transition-all rounded-full border border-[#f6f1eb]/30">
+              <a href="https://www.facebook.com/profile.php?id=61586014870730" className="p-3 bg-[#f6f1eb]/10 hover:bg-[#f6f1eb] hover:text-[#8b3f1f] transition-all rounded-full border border-[#f6f1eb]/30">
                 <FaFacebookF size={18} />
               </a>
               <a href="#" className="p-3 bg-[#f6f1eb]/10 hover:bg-[#f6f1eb] hover:text-[#8b3f1f] transition-all rounded-full border border-[#f6f1eb]/30">

@@ -14,6 +14,10 @@ import RootLayout from "./layout/RootLayout";
 import { useAuth } from "./hooks/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Signup from "./pages/Signup";
+import Contact from "./pages/Contact";
+import Preserve from "./pages/Preserve";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 function App() {
   const { user } = useAuth()!;
@@ -24,6 +28,10 @@ function App() {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="preserve" element={<Preserve />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
           <Route
             path="login"
             element={!!user ? <Navigate to="/" /> : <Login /> }
