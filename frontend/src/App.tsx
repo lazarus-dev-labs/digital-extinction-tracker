@@ -18,6 +18,7 @@ import Contact from "./pages/Contact";
 import Preserve from "./pages/Preserve";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import UserDashboard from "./pages/UserDashboard";
 
 function App() {
   const { user } = useAuth()!;
@@ -41,7 +42,7 @@ function App() {
             element={<Signup/>}
           />
           <Route element={<ProtectedRoute />}>
-
+            <Route path="dashboard" element={<UserDashboard />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>

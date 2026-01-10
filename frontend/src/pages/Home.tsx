@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CardForHome from "../components/cards/CardForHome";
 import "../index.css"; 
 
-import HeroImg from "../assets/HeroImg.png";
+import HeroImg from "../assets/Front_Img.png";
 import our_stories_img1 from "../assets/our_stories/Angampora_Secret_Maneuvers.png"
 import our_stories_img2 from "../assets/our_stories/Archaic_Healing_Dialects.png"
 import our_stories_img3 from "../assets/our_stories/Lost_Chena_Cultivation_Songs.png"
