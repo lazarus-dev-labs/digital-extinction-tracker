@@ -1,4 +1,3 @@
-import React from "react";
 import logoImg from "../assets/logo.png";
 import {
   NavigationMenu,
@@ -47,9 +46,11 @@ const Header = () => {
             <NavigationMenuItem>
               <Link to="/category" className="navigation-link">Categories</Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            {
+              !!user && (<NavigationMenuItem>
               <Link to="/preserve" className="navigation-link">Preserve</Link>
-            </NavigationMenuItem>
+            </NavigationMenuItem>)
+            }
             <NavigationMenuItem>
               <Link to="/contact" className="navigation-link">Contact</Link>
             </NavigationMenuItem>

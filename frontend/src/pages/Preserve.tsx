@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,21 +11,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, X } from 'lucide-react';
+
+import { api } from "@/api/api";
+import { auth } from "@/firebase";
+import type  { SubmitHandler } from "react-hook-form";
+interface PreserveFormData {
+  title: string;
+  language: string;
+  category: string;
+  timePeriod: string;
+  description: string;
+  tags: string[];
+}
 
 export default function Preserve() {
-  /* -------------------- TAGS -------------------- */
-  const [tags, setTags] = useState<string[]>(['History', 'SriLanka', 'Ruwana']);
+  const { register, handleSubmit, control, setValue, watch, formState: { errors, isSubmitting } } = useForm<PreserveFormData>({
+    defaultValues: {
+      title: '',
+      language: 'sinhala',
+      category: '',
+      timePeriod: '',
+      description: '',
+      tags: ['History', 'SriLanka', 'Ruwana']
+    }
+  });
+
+  const tags = watch('tags');
+  
   const [tagInput, setTagInput] = useState('');
 
+  /* -------------------- TAGS -------------------- */
   const addTag = (tag: string) => {
     const cleanTag = tag.trim();
     if (!cleanTag || tags.includes(cleanTag) || tags.length >= 8) return;
-    setTags([...tags, cleanTag]);
+    setValue('tags', [...tags, cleanTag]);
   };
 
   const removeTag = (tagToRemove: string) => {
-    setTags(prev => prev.filter(tag => tag !== tagToRemove));
+    setValue('tags', tags.filter(tag => tag !== tagToRemove));
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -40,22 +64,41 @@ export default function Preserve() {
     }
   };
 
-  /* -------------------- MEDIA -------------------- */
-  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
 
-  const handleMediaUpload = (files: FileList | null) => {
-    if (!files) return;
-    setMediaFiles(prev => [...prev, ...Array.from(files)]);
-  };
-
-  const removeMedia = (index: number) => {
-    setMediaFiles(prev => prev.filter((_, i) => i !== index));
-  };
 
   const handleClear = () => {
-    setTags([]);
+    setValue('title', '');
+    setValue('language', 'sinhala');
+    setValue('category', '');
+    setValue('timePeriod', '');
+    setValue('description', '');
+    setValue('tags', []);
     setTagInput('');
-    setMediaFiles([]);
+  };
+
+  const onSubmit: SubmitHandler<PreserveFormData> = async (data) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        console.error("No user logged in");
+        // You might want to redirect to login or show an alert
+        return;
+      }
+
+      await api.post('stories', {
+        json: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log('Story submitted successfully!');
+      handleClear();
+      // Optionally show success message or redirect
+    } catch (error) {
+      console.error('Error submitting story:', error);
+      // Handle error (show toast, etc.)
+    }
   };
 
   return (
@@ -84,16 +127,38 @@ export default function Preserve() {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* TITLE & LANGUAGE */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <Label className="text-sm font-semibold text-[#5d4e37]">Title</Label>
-              <Input className="h-11 rounded-xl bg-[#faf8f5]" placeholder="Title" />
+              <Input 
+                {...register('title', { required: true })}
+                className="h-11 rounded-xl bg-[#faf8f5]" 
+                placeholder="Title" 
+              />
+              {errors.title && <span className="text-red-500 text-xs">Title is required</span>}
             </div>
             <div>
               <Label className="text-sm font-semibold text-[#5d4e37]">Language</Label>
-              <Input className="h-11 rounded-xl bg-[#faf8f5]" placeholder="Language" />
+              <Controller
+                name="language"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value || 'sinhala'}>
+                    <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
+                      <SelectItem value="sinhala">Sinhala</SelectItem>
+                      <SelectItem value="tamil">Tamil</SelectItem>
+                      <SelectItem value="english">English</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.language && <span className="text-red-500 text-xs">Language is required</span>}
             </div>
           </div>
 
@@ -101,100 +166,54 @@ export default function Preserve() {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <Label className="text-sm font-semibold text-[#5d4e37]">Category</Label>
-              <Select>
-                <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
-                  <SelectItem value="folk">Tradition & Rituals</SelectItem>
-                  <SelectItem value="historical">Arts & Performance</SelectItem>
-                  <SelectItem value="personal">Knowledge & Practices</SelectItem>
-                  <SelectItem value="cultural">Crafts & Industries</SelectItem>
-                  <SelectItem value="myths">Festivals & Social Events</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="category"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
+                      <SelectItem value="Tradition & Rituals">Tradition & Rituals</SelectItem>
+                      <SelectItem value="Arts & Performance">Arts & Performance</SelectItem>
+                      <SelectItem value="Knowledge & Practices">Knowledge & Practices</SelectItem>
+                      <SelectItem value="Crafts & Industries">Crafts & Industries</SelectItem>
+                      <SelectItem value="Festivals & Social Events">Festivals & Social Events</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.category && <span className="text-red-500 text-xs">Category is required</span>}
             </div>
 
             <div>
               <Label className="text-sm font-semibold text-[#5d4e37]">Time Period</Label>
-              <Select>
-                <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
-                  <SelectValue placeholder="Select time period" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
-                  <SelectItem value="ancient">Ancient</SelectItem>
-                  <SelectItem value="medieval">Medieval</SelectItem>
-                  <SelectItem value="colonial">Colonial</SelectItem>
-                  <SelectItem value="modern">Modern</SelectItem>
-                  <SelectItem value="contemporary">Contemporary</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="timePeriod"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
+                      <SelectValue placeholder="Select time period" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
+                      <SelectItem value="ancient">Ancient</SelectItem>
+                      <SelectItem value="medieval">Medieval</SelectItem>
+                      <SelectItem value="colonial">Colonial</SelectItem>
+                      <SelectItem value="modern">Modern</SelectItem>
+                      <SelectItem value="contemporary">Contemporary</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.timePeriod && <span className="text-red-500 text-xs">Time Period is required</span>}
             </div>
           </div>
 
-          {/* MEDIA UPLOAD */}
-          <div className="space-y-2 border-t border-[#eee4d8] pt-6">
-            <Label className="text-sm font-semibold text-[#5d4e37]">
-              Media Upload (Optional)
-            </Label>
 
-            <label
-              className="
-                flex flex-col items-center justify-center
-                rounded-2xl border-2 border-dashed border-[#cbb59a]
-                bg-[#faf8f5]
-                p-6 text-center cursor-pointer
-                hover:bg-[#f4ede4] transition
-              "
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                handleMediaUpload(e.dataTransfer.files);
-              }}
-            >
-              <Upload className="w-6 h-6 text-[#8b4513] mb-2" />
-              <p className="text-sm text-[#6d4c32]">
-                Drag & drop media here or <span className="underline">click to upload</span>
-              </p>
-              <p className="text-xs text-[#8d7a65] mt-1">
-                Images, Videos, or Audio
-              </p>
-
-              <input
-                type="file"
-                multiple
-                accept="image/*,video/*,audio/*"
-                className="hidden"
-                onChange={(e) => handleMediaUpload(e.target.files)}
-              />
-            </label>
-
-            {mediaFiles.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-                {mediaFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="relative rounded-xl border bg-white p-3"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => removeMedia(index)}
-                      className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
-                    >
-                      <X size={14} />
-                    </button>
-
-                    <p className="text-xs text-[#5d4e37] truncate">
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] text-[#8d7a65]">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* TAGS */}
           <div>
@@ -236,15 +255,21 @@ export default function Preserve() {
           <div>
             <Label className="text-sm font-semibold text-[#5d4e37]">Description</Label>
             <Textarea
+              {...register('description', { required: true })}
               className="min-h-[180px] rounded-xl bg-[#faf8f5]"
               placeholder="Tell the story..."
             />
+            {errors.description && <span className="text-red-500 text-xs">Description is required</span>}
           </div>
 
           {/* BUTTONS */}
           <div className="flex gap-4 pt-4">
-            <Button className="bg-[#8b4513] hover:bg-[#6f3510] text-white rounded-xl px-8 h-11">
-              Submit
+            <Button 
+              type="submit" 
+              className="bg-[#8b4513] hover:bg-[#6f3510] text-white rounded-xl px-8 h-11"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit'}
             </Button>
             <Button
               type="button"
