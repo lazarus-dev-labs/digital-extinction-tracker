@@ -32,7 +32,6 @@ function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="preserve" element={<Preserve />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
           <Route path="category" element={<CategoryPage />} />
@@ -40,13 +39,14 @@ function App() {
           <Route
             path="login"
             element={!!user ? <Navigate to="/" /> : <Login /> }
-          />
+            />
           <Route
             path="register"
             element={<Signup/>}
           />
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="preserve" element={<Preserve />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>
