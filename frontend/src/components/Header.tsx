@@ -3,13 +3,10 @@ import logoImg from "../assets/logo.png";
 import {
   NavigationMenu,
   NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
+  NavigationMenuItem
 } from "./ui/navigation-menu";
 import { useAuth } from "../hooks/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Header = () => {
   const { user, logout } = useAuth()!; // get auth state and logout function
@@ -42,24 +39,19 @@ const Header = () => {
         <NavigationMenu>
           <NavigationMenuList className="flex items-center gap-4">
             <NavigationMenuItem>
-              <NavigationMenuLink href="/">Home</NavigationMenuLink>
+              <Link to="/" className="navigation-link">Home</Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/about">About Us</NavigationMenuLink>
+              <Link to="/about" className="navigation-link">About Us</Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-white shadow-lg rounded-lg p-4 flex flex-col gap-2">
-                <NavigationMenuLink href="#">Story</NavigationMenuLink>
-                <NavigationMenuLink href="#">Tradition</NavigationMenuLink>
-                <NavigationMenuLink href="#">Language</NavigationMenuLink>
-              </NavigationMenuContent>
+              <Link to="/category" className="navigation-link">Categories</Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/preserve">Preserve</NavigationMenuLink>
+              <Link to="/preserve" className="navigation-link">Preserve</Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/contact">Contact</NavigationMenuLink>
+              <Link to="/contact" className="navigation-link">Contact</Link>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -89,9 +81,9 @@ const Header = () => {
                 </div>
                 
                 {/* Simple tooltip that shows on hover */}
-                <span className="absolute -bottom-8 scale-0 transition-all rounded bg-gray-800 p-1 text-xs text-white group-hover:scale-100">
+                {/* <span className="absolute -bottom-8 scale-0 transition-all rounded bg-gray-800 p-1 text-xs text-white group-hover:scale-100">
                   Dashboard
-                </span>
+                </span> */}
               </button>
 
               {/* LOGOUT BUTTON */}
