@@ -4,6 +4,10 @@ import type { ReactNode } from "react";
 import type { User } from "firebase/auth";
 import { auth } from "@/firebase";
 
+interface ExtendedUser extends User {
+  role?: "admin" | "user";
+}
+
 interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
