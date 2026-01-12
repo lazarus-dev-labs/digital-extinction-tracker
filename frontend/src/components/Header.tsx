@@ -1,15 +1,11 @@
-import React from "react";
 import logoImg from "../assets/logo.png";
 import {
   NavigationMenu,
   NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
+  NavigationMenuItem
 } from "./ui/navigation-menu";
 import { useAuth } from "../hooks/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Header = () => {
   const { user, logout } = useAuth()!; // get auth state and logout function
@@ -42,26 +38,21 @@ const Header = () => {
         <NavigationMenu>
           <NavigationMenuList className="flex items-center gap-4">
             <NavigationMenuItem>
-              <NavigationMenuLink href="/">Home</NavigationMenuLink>
+              <Link to="/" className="navigation-link">Home</Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/about">About Us</NavigationMenuLink>
+              <Link to="/about" className="navigation-link">About Us</Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-white shadow-lg rounded-lg p-4 flex flex-col gap-2">
-                <NavigationMenuLink href="/category/Tradition & Rituals">Tradition & Rituals</NavigationMenuLink>
-                <NavigationMenuLink href="/category/Arts & Performance">Arts & Performance</NavigationMenuLink>
-                <NavigationMenuLink href="/category/Knowledge & Practices">Knowledge & Practices</NavigationMenuLink>
-                <NavigationMenuLink href="/category/Crafts & Industries">Crafts & Industries</NavigationMenuLink>
-                <NavigationMenuLink href="/category/Festivals & Social Events">Festivals & Social Events</NavigationMenuLink>
-              </NavigationMenuContent>
+              <Link to="/category" className="navigation-link">Categories</Link>
             </NavigationMenuItem>
+            {
+              !!user && (<NavigationMenuItem>
+              <Link to="/preserve" className="navigation-link">Preserve</Link>
+            </NavigationMenuItem>)
+            }
             <NavigationMenuItem>
-              <NavigationMenuLink href="/preserve">Preserve</NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink href="/contact">Contact</NavigationMenuLink>
+              <Link to="/contact" className="navigation-link">Contact</Link>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

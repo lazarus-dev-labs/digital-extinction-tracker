@@ -2,9 +2,12 @@ import React from 'react';
 import { ShieldAlert, ShieldCheck, MapPin } from 'lucide-react';
 
 const StoryCard = ({ story }: { story: any }) => {
-  // Backend switched values indicate
-  const displayLevel = story.risk_score; // "High", "Low" words
-  const displayScore = story.risk_level; // 0.8, 0.2 numbers
+  // Correctly map values based on user sample data
+  const riskLevel = story.risk_level; // e.g., "Medium", "High"
+  const riskScore = story.risk_score; // e.g., 0.6
+
+  const isHighRisk = riskLevel === 'High';
+  const isMediumRisk = riskLevel === 'Medium';
 
   return (
     <div className="bg-white rounded-2xl border border-amber-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
@@ -12,9 +15,17 @@ const StoryCard = ({ story }: { story: any }) => {
         <span className="bg-amber-50 text-[#8b4513] text-[10px] px-2 py-1 rounded font-bold uppercase">
           {story.language}
         </span>
-        <div className={`flex items-center text-xs font-bold ${displayLevel === 'High' ? 'text-red-600' : 'text-green-600'}`}>
-          {displayLevel === 'High' ? <ShieldAlert size={14} className="mr-1" /> : <ShieldCheck size={14} className="mr-1" />}
-          {displayLevel} Risk ({displayScore})
+        <div 
+          className={`flex items-center text-xs font-bold ${
+            isHighRisk ? 'text-red-600' : isMediumRisk ? 'text-orange-600' : 'text-green-600'
+          }`}
+        >
+          {isHighRisk ? (
+            <ShieldAlert size={14} className="mr-1" />
+          ) : (
+            <ShieldCheck size={14} className="mr-1" />
+          )}
+          {riskLevel} Risk ({riskScore})
         </div>
       </div>
 

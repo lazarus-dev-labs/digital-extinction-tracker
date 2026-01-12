@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import Request, HTTPException
-import firebase_admin, os, langid, requests, faiss, numpy as np, regex as re
+import firebase_admin, os, requests, faiss, numpy as np, regex as re
 from firebase_admin import credentials, auth, firestore
 from dotenv import load_dotenv
 from typing import List, Optional
@@ -14,11 +14,7 @@ API_KEY = os.getenv("GOOGLE_API_KEY")
 SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
 URL = "https://www.googleapis.com/customsearch/v1"
 
-LANG_RARITY: dict[str, float] = {
-    "sinhala": 1.0, 
-    "tamil": 0.8, 
-    "english": 0.1
-}
+LANG_RARITY: dict[str, float] = {"sinhala": 1.0, "tamil": 0.8, "english": 0.1}
 
 db: Optional[Client] | None = None
 
@@ -85,15 +81,14 @@ def risk_based_on_length(text: str) -> List[float]:
 
 # language detection
 def language_detection(lang: str) -> float:
-    return LANG_RARITY.get(lang.lower(), 0.0)
+    return LANG_RARITY.get(lang, 0.0)
 
 
 # Count no of digital references
-def digital_reference_rarity(text: str) -> List[int | float]:
+def digital_reference_rarity(text: str, lang: str) -> List[int | float]:
     # Detect language first
-    lang, conf = langid.classify(text)
 
-    if lang == "si":
+    if lang == "sinhala":
         words = re.findall(r"[\u0D80-\u0DFF]+", text)
         if not words:
             return [0, 0]
@@ -130,7 +125,6 @@ def digital_reference_rarity(text: str) -> List[int | float]:
             result = 0.0
 
         return [count, result]
-    
 
     except Exception as e:
         print("An exception occurred while counting references:", e)
@@ -145,29 +139,34 @@ def embed_text(text: str) -> np.ndarray:
 
 # extract the embeddings from the database
 def load_local_story_vectors() -> List[IndexFlatL2 | int]:
-    # Fetch all documents in the 'stories' collection
-    docs = db.collection("cultural_items").stream()
-    vectors = []
+    try:
+        # Fetch all documents in the 'stories' collection
+        docs = db.collection("cultural_items").stream()
+        vectors = []
 
-    for doc in docs:
-        data = doc.to_dict()
-        embedding = data.get("embedding")
-        if embedding:
-            # Convert to float32 array, just in case
-            vectors.append(np.array(embedding, dtype="float32"))
+        for doc in docs:
+            data = doc.to_dict()
+            embedding = data.get("embedding")
+            if embedding:
+                # Convert to float32 array, just in case
+                vectors.append(np.array(embedding, dtype="float32"))
 
-    if not vectors:
-        pass
+        if not vectors:
+            return [None, 0]
 
-    # Stack vectors into a 2D numpy array (n_vectors x dim)
-    vectors_np = np.vstack(vectors)
+        # Stack vectors into a 2D numpy array (n_vectors x dim)
+        vectors_np = np.vstack(vectors)
 
-    # Initialize FAISS index
-    dim = vectors_np.shape[1]
-    index = faiss.IndexFlatL2(dim)
-    index.add(vectors_np)
+        # Initialize FAISS index
+        dim = vectors_np.shape[1]
+        index = faiss.IndexFlatL2(dim)
+        index.add(vectors_np)
 
-    return [index, len(vectors)]
+        return [index, len(vectors)]
+
+    except Exception as e:
+        print("Encountered and Error while receiving local story vectors", e)
+        raise e
 
 
 def local_similarity_score(text: str) -> float:
@@ -193,11 +192,13 @@ def local_similarity_score(text: str) -> float:
     else:
         return 1.0  # completely rare / locally rare
 
+
 def calculate_extinction_risk(text: str, lang: str) -> dict:
 
+    lang = lang.lower()
     _, length_risk = risk_based_on_length(text)
     lang_risk = language_detection(lang)
-    digital_reference_count, digital_risk = digital_reference_rarity(text)
+    digital_reference_count, digital_risk = digital_reference_rarity(text, lang)
     local_risk = local_similarity_score(text)
 
     final_score = (

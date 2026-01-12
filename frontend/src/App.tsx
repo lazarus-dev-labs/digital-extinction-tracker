@@ -19,11 +19,11 @@ import Preserve from "./pages/Preserve";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import UserDashboard from "./pages/UserDashboard";
-// import CategoryPage from "./pages/CategoryPage";
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
   const { user } = useAuth()!;
-  console.log(user["accessToken"]);
+  // console.log(user["accessToken"]);
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -32,20 +32,21 @@ function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="preserve" element={<Preserve />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
+          <Route path="category" element={<CategoryPage />} />
           {/* <Route path="category/:categoryName" element={<CategoryPage />} /> */}
           <Route
             path="login"
             element={!!user ? <Navigate to="/" /> : <Login /> }
-          />
+            />
           <Route
             path="register"
             element={<Signup/>}
           />
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="preserve" element={<Preserve />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>
