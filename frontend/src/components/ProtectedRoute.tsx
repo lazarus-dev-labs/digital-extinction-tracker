@@ -1,31 +1,25 @@
-// import { Navigate, Outlet } from 'react-router-dom'
-// import { useAuth } from '../hooks/AuthContext'
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/AuthContext";
 
-// const ProtectedRoute = () => {
-//   const { user } = useAuth()!;
-
-//   if (!!user) {
-//     return <Navigate to="/login" replace />
-//   }
-
-//   return <Outlet />
-// }
-
-// export default ProtectedRoute
-
-import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '../hooks/AuthContext'
-
-const ProtectedRoute = () => {
-  const { user } = useAuth()!;
-
-  // If there is NO user, redirect them to login
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
-
-  // If there IS a user, show the "Outlet" (the Dashboard/Protected page)
-  return <Outlet />
+interface ProtectedRouteProps {
+  role?: "admin" | "user";
 }
 
-export default ProtectedRoute
+const ProtectedRoute = ({ role }: ProtectedRouteProps) => {
+  const { user, loading } = useAuth()!;
+
+  if (loading) return null; // wait until auth state is loaded
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  // If role specified, redirect if user doesn't match
+  if (role && user.role !== role) {
+    // optional: redirect admins trying to access user pages
+    if (role === "user" && user.role === "admin") return <Navigate to="/admindashboard" replace />;
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+};
+
+export default ProtectedRoute;
