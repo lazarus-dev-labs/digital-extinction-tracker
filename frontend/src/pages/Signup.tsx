@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import type { SubmitHandler } from "react-hook-form"
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
 
 
 type FormInputs = {
@@ -25,6 +27,17 @@ const Signup = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormInputs>();
 
+  //Add Users to Firestore
+  const addUserToFirestore = async (uid: string, email: string | null) => {
+    await setDoc(doc(db, "users", uid), {
+      uid,
+      email,
+      role: "user",
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp(),
+    });
+  };
+
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setError("");
     if (data.password !== data.confirmPassword) {
@@ -33,7 +46,10 @@ const Signup = () => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+       // Add user to Firestore
+      await addUserToFirestore(userCredential.user.uid, userCredential.user.email);
+
       navigate("/dashboard"); // Redirect after successful signup
     } catch (err: any) {
       console.error(err);
@@ -44,7 +60,12 @@ const Signup = () => {
   const handleGoogleSignup = async () => {
     setError("");
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+
+      // Add user to Firestore
+      const user = result.user;
+      await addUserToFirestore(user.uid, user.email);
+      
       navigate("/dashboard"); // Redirect after successful signup
     } catch (err: any) {
       console.error(err);
