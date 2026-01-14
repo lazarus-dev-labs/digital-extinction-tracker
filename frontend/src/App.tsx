@@ -14,9 +14,17 @@ import RootLayout from "./layout/RootLayout";
 import { useAuth } from "./hooks/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Signup from "./pages/Signup";
+import Contact from "./pages/Contact";
+import Preserve from "./pages/Preserve";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import UserDashboard from "./pages/UserDashboard";
+import CategoryPage from "./pages/CategoryPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const { user } = useAuth()!;
+  // console.log(user["accessToken"]);
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -24,16 +32,26 @@ function App() {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="category" element={<CategoryPage />} />
+          {/* <Route path="category/:categoryName" element={<CategoryPage />} /> */}
           <Route
             path="login"
-            element={!!user ? <Navigate to="/" /> : <Login /> }
+            element={!!user ? <Navigate to="/" /> : <Login />}
           />
           <Route
             path="register"
-            element={<Signup/>}
+            element={<Signup />}
           />
-          <Route element={<ProtectedRoute />}>
 
+          <Route element={<ProtectedRoute role="admin" />}>
+            <Route path="admindashboard" element={<AdminDashboard />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="preserve" element={<Preserve />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>

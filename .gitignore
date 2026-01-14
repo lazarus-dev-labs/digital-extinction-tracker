@@ -1,5 +1,6 @@
 # dependencies (bun install)
 node_modules
+testing
 
 # output
 out
@@ -42,3 +43,9 @@ env
 .env
 .pytest_cache
 *.json
+
+# Python virtual environment
+venv/
+.env
+__pycache__/
+*.pyc

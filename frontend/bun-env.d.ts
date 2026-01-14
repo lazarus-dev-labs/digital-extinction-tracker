@@ -14,3 +14,8 @@ declare module "*.module.css" {
    */
   export = classes;
 }
+
+declare module "*.png" {
+  const content: string;
+  export default content;
+}
