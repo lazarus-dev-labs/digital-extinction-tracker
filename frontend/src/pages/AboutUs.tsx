@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../index.css"; // Tailwind
-import AboutusHero from "../assets/Aboutus_hero.png"
+import AboutusHero from "../assets/Aboutus_hero.webp" 
 
 export default function AboutUs() {
     const navigate = useNavigate();

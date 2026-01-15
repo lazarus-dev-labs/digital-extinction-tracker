@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import CardForHome from "../components/cards/CardForHome";
 import "../index.css"; 
 
-import HeroImg from "../assets/Front_Img.png";
-import our_stories_img1 from "../assets/our_stories/Angampora_Secret_Maneuvers.png"
-import our_stories_img2 from "../assets/our_stories/Archaic_Healing_Dialects.png"
-import our_stories_img3 from "../assets/our_stories/Lost_Chena_Cultivation_Songs.png"
-import our_stories_img4 from "../assets/our_stories/Harvest_Moon.png"
-import our_stories_img5 from "../assets/our_stories/Wave_Reading_Navigation.png"
+import HeroImg from "../assets/Front_Img.webp";
+import our_stories_img1 from "../assets/our_stories/Angampora_Secret_Maneuvers.webp"
+import our_stories_img2 from "../assets/our_stories/Archaic_Healing_Dialects.webp"
+import our_stories_img3 from "../assets/our_stories/Lost_Chena_Cultivation_Songs.webp"
+import our_stories_img4 from "../assets/our_stories/Harvest_Moon.webp"
+import our_stories_img5 from "../assets/our_stories/Wave_Reading_Navigation.webp"
 
 export default function Home() {
   const navigate = useNavigate();
