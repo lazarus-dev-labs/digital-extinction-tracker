@@ -13,6 +13,7 @@ import our_stories_img5 from "../assets/our_stories/Wave_Reading_Navigation.webp
 export default function Home() {
   const navigate = useNavigate();
 
+  
   // 1. Cultural Data with Metadata for Cards
   const stories = [
     {
