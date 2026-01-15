@@ -133,6 +133,15 @@ const result = await Bun.build({
   sourcemap: "linked",
   define: {
     "process.env.NODE_ENV": JSON.stringify("production")},
+    // Manually map each BUN_PUBLIC variable from the environment into the bundle
+    "process.env.BUN_PUBLIC_API_KEY": JSON.stringify(process.env.BUN_PUBLIC_API_KEY),
+    "process.env.BUN_PUBLIC_AUTH_DOMAIN": JSON.stringify(process.env.BUN_PUBLIC_AUTH_DOMAIN),
+    "process.env.BUN_PUBLIC_PROJECT_ID": JSON.stringify(process.env.BUN_PUBLIC_PROJECT_ID),
+    "process.env.BUN_PUBLIC_STORAGE_BUCKET": JSON.stringify(process.env.BUN_PUBLIC_STORAGE_BUCKET),
+    "process.env.BUN_PUBLIC_MESSAGING_SENDER_ID": JSON.stringify(process.env.BUN_PUBLIC_MESSAGING_SENDER_ID),
+    "process.env.BUN_PUBLIC_APP_ID": JSON.stringify(process.env.BUN_PUBLIC_APP_ID),
+    "process.env.BUN_PUBLIC_MEASUREMENT_ID": JSON.stringify(process.env.BUN_PUBLIC_MEASUREMENT_ID),
+    "process.env.BUN_PUBLIC_BACKEND_URL": JSON.stringify(process.env.BUN_PUBLIC_BACKEND_URL),
   ...cliConfig,
 });
 
