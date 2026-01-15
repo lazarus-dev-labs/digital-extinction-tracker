@@ -132,7 +132,7 @@ const result = await Bun.build({
   target: "browser",
   sourcemap: "linked",
   define: {
-    "process.env.NODE_ENV": JSON.stringify("production")},
+    "process.env.NODE_ENV": JSON.stringify("production"),
     // Manually map each BUN_PUBLIC variable from the environment into the bundle
     "process.env.BUN_PUBLIC_API_KEY": JSON.stringify(process.env.BUN_PUBLIC_API_KEY),
     "process.env.BUN_PUBLIC_AUTH_DOMAIN": JSON.stringify(process.env.BUN_PUBLIC_AUTH_DOMAIN),
@@ -142,6 +142,7 @@ const result = await Bun.build({
     "process.env.BUN_PUBLIC_APP_ID": JSON.stringify(process.env.BUN_PUBLIC_APP_ID),
     "process.env.BUN_PUBLIC_MEASUREMENT_ID": JSON.stringify(process.env.BUN_PUBLIC_MEASUREMENT_ID),
     "process.env.BUN_PUBLIC_BACKEND_URL": JSON.stringify(process.env.BUN_PUBLIC_BACKEND_URL),
+  },
   ...cliConfig,
 });
 
