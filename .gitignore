@@ -1,6 +1,8 @@
 # dependencies (bun install)
 node_modules
 testing
+config
+.vercel
 
 # output
 out
@@ -40,12 +42,5 @@ env
 
 # files
 .flaskenv
-.env
 .pytest_cache
-*.json
-
-# Python virtual environment
-venv/
-.env
-__pycache__/
-*.pyc
+.vercel
