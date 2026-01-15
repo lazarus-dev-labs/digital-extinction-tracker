@@ -20,6 +20,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import UserDashboard from "./pages/UserDashboard";
 import CategoryPage from "./pages/CategoryPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const { user } = useAuth()!;
@@ -38,12 +39,16 @@ function App() {
           {/* <Route path="category/:categoryName" element={<CategoryPage />} /> */}
           <Route
             path="login"
-            element={!!user ? <Navigate to="/" /> : <Login /> }
-            />
+            element={!!user ? <Navigate to="/" /> : <Login />}
+          />
           <Route
             path="register"
-            element={<Signup/>}
+            element={<Signup />}
           />
+
+          <Route element={<ProtectedRoute role="admin" />}>
+            <Route path="admindashboard" element={<AdminDashboard />} />
+          </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<UserDashboard />} />
             <Route path="preserve" element={<Preserve />} />
