@@ -1,2 +1,5 @@
 # digital-extinction-tracker
+
 A web application that helps identify, track, and preserve endangered cultural knowledge (folk  stories, rare words, proverbs, traditions) by using AI / ML to analyze text and assign risk levels.
+
+Rune is a digital extinction tracker designed and implemented by Team Lazarus to preserve cultural heritage in digital format for preservation purposes. To proceed with the preservation process, users must register or log in to the system. After successful login, users are able to navigate to the preservation section, fill out the required form with necessary information, and upload text data. After submission, the preservation request is carefully inspected by the administrator for validity and approved accordingly. Once approved, the preserved information is displayed to the public under the categories section. Users are able to filter the preserved information based on category type, risk level, and risk score.
