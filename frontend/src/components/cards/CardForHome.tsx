@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -10,9 +11,21 @@ interface CardForHomeProps {
   title: string;
   description: string;
   image: string;
+  slug?: string;
 }
 
-const CardForHome: React.FC<CardForHomeProps> = ({ title, description, image }) => {
+const CardForHome: React.FC<CardForHomeProps> = ({ title,slug, description, image }) => {
+  const navigate = useNavigate();
+
+  // Read more click kalama wena de
+  const handleReadMore = () => {
+    if (slug) {
+      navigate(`/category/${slug}`);
+    } else {
+      // Default widiyata id eka anuwa yannath puluwan
+      // navigate(`/category/tradition`); 
+    }
+  };
   return (
     <Card className="max-w-xs mx-auto overflow-hidden bg-[#F4F1EA] border-[6px] border-[#F0C17F] rounded-[30px] shadow-md flex flex-col h-full gap-0 p-0">
       {/* 1. Image remains outside of padding sections to stay "edge-to-edge" */}
@@ -28,10 +41,10 @@ const CardForHome: React.FC<CardForHomeProps> = ({ title, description, image }) 
           <CardTitle className="text-xl font-bold text-[#9F3B0F] leading-tight">
             {title}
           </CardTitle>
-          <div className="flex items-center space-x-1 text-green-600 font-medium">
+          {/* <div className="flex items-center space-x-1 text-green-600 font-medium">
             <span className="bg-green-600 text-white rounded-full w-3 h-3 flex items-center justify-center text-[8px]">★</span>
             <span className="text-[10px]">Low</span>
-          </div>
+          </div> */}
         </div>
       </CardHeader>
 
@@ -41,7 +54,10 @@ const CardForHome: React.FC<CardForHomeProps> = ({ title, description, image }) 
           {description}
         </p>
 
-        <button className="w-full bg-[#9F3B0F] hover:bg-[#EF9829] text-white text-sm font-bold py-2 rounded-lg transition-colors duration-300">
+        <button 
+          onClick={handleReadMore} // Meka danna amathaka karanna epa
+          className="w-full bg-[#9F3B0F] hover:bg-[#EF9829] text-white text-sm font-bold py-2 rounded-lg transition-colors duration-300"
+        >
           Read more
         </button>
       </CardContent>
