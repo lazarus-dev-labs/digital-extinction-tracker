@@ -19,10 +19,16 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
 
   // Fetch user doc with role
-  const fetchUserWithRole = async (uid: string): Promise<ExtendedUser | null> => {
+  const fetchUserWithRole = async (
+    uid: string
+  ): Promise<ExtendedUser | null> => {
     const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
     if (userSnap.exists()) {
@@ -46,7 +52,20 @@ const Login = () => {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setError("");
     try {
-      const cred = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const cred = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      // Mark user as active
+      const userRef = doc(db, "users", cred.user.uid);
+      await setDoc(
+        userRef,
+        { status: "active", updated_at: serverTimestamp() },
+        { merge: true }
+      );
+
       const fullUser = await fetchUserWithRole(cred.user.uid);
       if (!fullUser) throw new Error("No user data found");
 
@@ -75,10 +94,19 @@ const Login = () => {
         await setDoc(userRef, {
           uid: user.uid,
           email: user.email,
+          status: "active",
           role: "user",
-          createdAt: serverTimestamp(),
+          created_at: serverTimestamp(),
         });
-      }
+      }else {
+      // Update status to active if already exists
+      await setDoc(
+        userRef,
+        { status: "active", updated_at: serverTimestamp() },
+        { merge: true }
+      );
+    }
+
 
       const fullUser = await fetchUserWithRole(user.uid);
       if (!fullUser) throw new Error("No user data found");
@@ -97,7 +125,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f1eb]">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border border-[#8b3f1f]">
-        <h2 className="text-3xl font-bold text-center text-[#8b3f1f] mb-6">Login to Rune</h2>
+        <h2 className="text-3xl font-bold text-center text-[#8b3f1f] mb-6">
+          Login to Rune
+        </h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -109,11 +139,17 @@ const Login = () => {
               placeholder="Enter email"
               className="w-full px-4 py-2 rounded-lg border border-[#8b3f1f] focus:outline-none focus:ring-2 focus:ring-[#8b3f1f]"
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm mb-1 text-[#8b3f1f]">Password</label>
+            <label className="block text-sm mb-1 text-[#8b3f1f]">
+              Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -128,7 +164,11 @@ const Login = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <button
@@ -154,7 +194,10 @@ const Login = () => {
 
         <p className="text-center text-sm mt-5 text-gray-600">
           Not signed up yet?{" "}
-          <Link to="/register" className="text-[#8b3f1f] hover:underline font-semibold">
+          <Link
+            to="/register"
+            className="text-[#8b3f1f] hover:underline font-semibold"
+          >
             Sign up
           </Link>
         </p>

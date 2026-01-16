@@ -38,8 +38,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           await setDoc(userRef, {
             uid: currentUser.uid,
             email: currentUser.email,
+            status: "active",
             role: "user",
-            createdAt: serverTimestamp(),
+            created_at: serverTimestamp(),
           });
           setUser({ ...currentUser, role: "user" });
         } else {
@@ -57,6 +58,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async () => {
     try {
+      if (user) {
+        // Set status to inactive in Firestore
+        const userRef = doc(db, "users", user.uid);
+        await setDoc(
+          userRef,
+          { status: "inactive", updated_at: serverTimestamp() },
+          { merge: true } // merge to avoid overwriting other fields
+        );
+      }
+
+      // Sign out from Firebase Auth
       await signOut(auth);
       setUser(null);
     } catch (err) {

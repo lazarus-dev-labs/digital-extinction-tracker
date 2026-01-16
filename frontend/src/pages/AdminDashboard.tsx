@@ -297,7 +297,7 @@ export default function AdminDashboard() {
                       <td className="px-8 py-5 font-mono text-xs text-slate-400">{user.email || "NO_PATH"}</td>
                       <td className="px-8 py-5">
                         <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tighter border ${user.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border-white/10'}`}>
-                          {user.status || "Inactive"}
+                          {user.status || "inactive"}
                         </span>
                       </td>
                       <td className="px-8 py-5 text-right">

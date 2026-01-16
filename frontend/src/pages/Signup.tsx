@@ -33,9 +33,9 @@ const Signup = () => {
     await setDoc(doc(db, "users", uid), {
       uid,
       email,
+      status: "active",
       role: "user",
-      created_at: serverTimestamp(),
-      updated_at: serverTimestamp(),
+      created_at: serverTimestamp()
     });
   };
 
