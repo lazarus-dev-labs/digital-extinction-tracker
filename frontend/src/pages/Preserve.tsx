@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 import { api } from "@/api/api";
 import { auth } from "@/firebase";
-import type  { SubmitHandler } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 interface PreserveFormData {
   title: string;
   language: string;
@@ -22,81 +22,104 @@ interface PreserveFormData {
   timePeriod: string;
   description: string;
   tags: string[];
+  user_id: string;
+  user_name: string;
 }
 
 export default function Preserve() {
-  const { register, handleSubmit, control, setValue, watch, formState: { errors, isSubmitting } } = useForm<PreserveFormData>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<PreserveFormData>({
     defaultValues: {
-      title: '',
-      language: 'sinhala',
-      category: '',
-      timePeriod: '',
-      description: '',
-      tags: ['History', 'SriLanka', 'Ruwana']
-    }
+      title: "",
+      language: "sinhala",
+      category: "",
+      timePeriod: "",
+      description: "",
+      tags: ["History", "SriLanka", "Rawana"],
+      user_id: "",
+      user_name: "",
+    },
   });
 
-  const tags = watch('tags');
-  
-  const [tagInput, setTagInput] = useState('');
+  const tags = watch("tags");
+
+  const [tagInput, setTagInput] = useState("");
 
   /* -------------------- TAGS -------------------- */
   const addTag = (tag: string) => {
     const cleanTag = tag.trim();
     if (!cleanTag || tags.includes(cleanTag) || tags.length >= 8) return;
-    setValue('tags', [...tags, cleanTag]);
+    setValue("tags", [...tags, cleanTag]);
   };
 
   const removeTag = (tagToRemove: string) => {
-    setValue('tags', tags.filter(tag => tag !== tagToRemove));
+    setValue(
+      "tags",
+      tags.filter((tag) => tag !== tagToRemove)
+    );
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       addTag(tagInput);
-      setTagInput('');
+      setTagInput("");
     }
 
-    if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
+    if (e.key === "Backspace" && !tagInput && tags.length > 0) {
       const lastTag = tags[tags.length - 1];
       if (lastTag) removeTag(lastTag);
     }
   };
 
-
-
   const handleClear = () => {
-    setValue('title', '');
-    setValue('language', 'sinhala');
-    setValue('category', '');
-    setValue('timePeriod', '');
-    setValue('description', '');
-    setValue('tags', []);
-    setTagInput('');
+    setValue("title", "");
+    setValue("language", "sinhala");
+    setValue("category", "");
+    setValue("timePeriod", "");
+    setValue("description", "");
+    setValue("tags", []);
+    setTagInput("");
   };
 
   const onSubmit: SubmitHandler<PreserveFormData> = async (data) => {
     try {
-      const token = await auth.currentUser?.getIdToken();
-      if (!token) {
+      const user = await auth.currentUser;
+
+      const token = await user?.getIdToken();
+
+      if (!user || !token) {
         console.error("No user logged in");
-        // You might want to redirect to login or show an alert
         return;
       }
 
+      setValue("user_id", user.uid);
+      setValue("user_name", user.displayName ?? user.email ?? "");
+
+      const payload = {
+        ...data,
+        user_id: user.uid,
+        user_name: user.displayName ?? user.email,
+      };
+
       await api.post('stories', {
-        json: data,
+        json: payload,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      console.log('Story submitted successfully!');
+      console.log("Story submitted successfully!");
       handleClear();
       // Optionally show success message or redirect
     } catch (error) {
-      console.error('Error submitting story:', error);
+      console.error("Error submitting story:", error);
       // Handle error (show toast, etc.)
     }
   };
@@ -123,7 +146,8 @@ export default function Preserve() {
             <span className="block text-[#8b4513]">Preserve it.</span>
           </h2>
           <p className="mt-3 text-sm text-[#6d5c4a] max-w-xl">
-            Help protect fading traditions, memories, and voices for future generations.
+            Help protect fading traditions, memories, and voices for future
+            generations.
           </p>
         </div>
 
@@ -131,22 +155,31 @@ export default function Preserve() {
           {/* TITLE & LANGUAGE */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">Title</Label>
-              <Input 
-                {...register('title', { required: true })}
-                className="h-11 rounded-xl bg-[#faf8f5]" 
-                placeholder="Title" 
+              <Label className="text-sm font-semibold text-[#5d4e37]">
+                Title
+              </Label>
+              <Input
+                {...register("title", { required: true })}
+                className="h-11 rounded-xl bg-[#faf8f5]"
+                placeholder="Title"
               />
-              {errors.title && <span className="text-red-500 text-xs">Title is required</span>}
+              {errors.title && (
+                <span className="text-red-500 text-xs">Title is required</span>
+              )}
             </div>
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">Language</Label>
+              <Label className="text-sm font-semibold text-[#5d4e37]">
+                Language
+              </Label>
               <Controller
                 name="language"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value || 'sinhala'}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || "sinhala"}
+                  >
                     <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
@@ -158,14 +191,20 @@ export default function Preserve() {
                   </Select>
                 )}
               />
-              {errors.language && <span className="text-red-500 text-xs">Language is required</span>}
+              {errors.language && (
+                <span className="text-red-500 text-xs">
+                  Language is required
+                </span>
+              )}
             </div>
           </div>
 
           {/* CATEGORY & TIME */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">Category</Label>
+              <Label className="text-sm font-semibold text-[#5d4e37]">
+                Category
+              </Label>
               <Controller
                 name="category"
                 control={control}
@@ -176,20 +215,36 @@ export default function Preserve() {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
-                      <SelectItem value="Tradition & Rituals">Tradition & Rituals</SelectItem>
-                      <SelectItem value="Arts & Performance">Arts & Performance</SelectItem>
-                      <SelectItem value="Knowledge & Practices">Knowledge & Practices</SelectItem>
-                      <SelectItem value="Crafts & Industries">Crafts & Industries</SelectItem>
-                      <SelectItem value="Festivals & Social Events">Festivals & Social Events</SelectItem>
+                      <SelectItem value="Tradition & Rituals">
+                        Tradition & Rituals
+                      </SelectItem>
+                      <SelectItem value="Arts & Performance">
+                        Arts & Performance
+                      </SelectItem>
+                      <SelectItem value="Knowledge & Practices">
+                        Knowledge & Practices
+                      </SelectItem>
+                      <SelectItem value="Crafts & Industries">
+                        Crafts & Industries
+                      </SelectItem>
+                      <SelectItem value="Festivals & Social Events">
+                        Festivals & Social Events
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
-              {errors.category && <span className="text-red-500 text-xs">Category is required</span>}
+              {errors.category && (
+                <span className="text-red-500 text-xs">
+                  Category is required
+                </span>
+              )}
             </div>
 
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">Time Period</Label>
+              <Label className="text-sm font-semibold text-[#5d4e37]">
+                Time Period
+              </Label>
               <Controller
                 name="timePeriod"
                 control={control}
@@ -209,11 +264,13 @@ export default function Preserve() {
                   </Select>
                 )}
               />
-              {errors.timePeriod && <span className="text-red-500 text-xs">Time Period is required</span>}
+              {errors.timePeriod && (
+                <span className="text-red-500 text-xs">
+                  Time Period is required
+                </span>
+              )}
             </div>
           </div>
-
-
 
           {/* TAGS */}
           <div>
@@ -227,7 +284,7 @@ export default function Preserve() {
             />
 
             <div className="flex flex-wrap gap-2 mt-3">
-              {tags.map(tag => (
+              {tags.map((tag) => (
                 <span
                   key={tag}
                   className="
@@ -253,23 +310,29 @@ export default function Preserve() {
 
           {/* DESCRIPTION */}
           <div>
-            <Label className="text-sm font-semibold text-[#5d4e37]">Description</Label>
+            <Label className="text-sm font-semibold text-[#5d4e37]">
+              Description
+            </Label>
             <Textarea
-              {...register('description', { required: true })}
+              {...register("description", { required: true })}
               className="min-h-[180px] rounded-xl bg-[#faf8f5]"
               placeholder="Tell the story..."
             />
-            {errors.description && <span className="text-red-500 text-xs">Description is required</span>}
+            {errors.description && (
+              <span className="text-red-500 text-xs">
+                Description is required
+              </span>
+            )}
           </div>
 
           {/* BUTTONS */}
           <div className="flex gap-4 pt-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="bg-[#8b4513] hover:bg-[#6f3510] text-white rounded-xl px-8 h-11"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
             <Button
               type="button"

@@ -24,7 +24,7 @@ interface UserType {
 interface StoryType {
   id: string;
   title?: string;
-  author?: string;
+  user_name?: string;
   content?: string;      
   description?: string;  
   category?: string;     
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
 
   const filteredStories = stories.filter((s) => 
     (s?.title ?? "").toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (s?.author ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+    (s?.user_name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const pendingCount = stories.filter((s) => s.approved === false || s.approved === undefined).length;
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
                     <User size={16} />
                     <span className="text-[10px] font-mono uppercase tracking-widest">Origin Author</span>
                   </div>
-                  <p className="text-sm font-bold text-slate-200">{selectedStory.author || "Unknown Identity"}</p>
+                  <p className="text-sm font-bold text-slate-200">{selectedStory.user_name || "Unknown Identity"}</p>
                 </div>
                 <div className="bg-slate-950/50 p-5 rounded-2xl border border-white/5 group hover:border-purple-500/30 transition-all">
                   <div className="flex items-center gap-3 mb-2 text-purple-400">
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
                   filteredUsers.map((user) => (
                     <tr key={user.id} className="group hover:bg-white/[0.02] transition-colors">
                       <td className="px-8 py-5">
-                        <p className="font-bold text-slate-200 group-hover:text-cyan-400 transition-colors uppercase tracking-tight">{user.name || "UNIDENTIFIED"}</p>
+                        <p className="font-bold text-slate-200 group-hover:text-cyan-400 transition-colors uppercase tracking-tight">{user.email || "UNIDENTIFIED"}</p>
                         <p className="text-[10px] font-mono text-slate-500 uppercase mt-1">{user.role || "Standard Access"}</p>
                       </td>
                       <td className="px-8 py-5 font-mono text-xs text-slate-400">{user.email || "NO_PATH"}</td>
@@ -304,7 +304,7 @@ export default function AdminDashboard() {
                           {story.title || "UNTITLED_LOG"}
                         </button>
                       </td>
-                      <td className="px-8 py-5 text-sm text-slate-400 italic">by {story.author || "Anonymous"}</td>
+                      <td className="px-8 py-5 text-sm text-slate-400 italic">by {story.user_name || "Anonymous"}</td>
                       <td className="px-8 py-5">
                         {story.approved ? (
                           <span className="text-[10px] font-mono text-emerald-500 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> VERIFIED</span>
