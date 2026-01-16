@@ -21,6 +21,11 @@ import Terms from "./pages/Terms";
 import UserDashboard from "./pages/UserDashboard";
 import CategoryPage from "./pages/CategoryPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import Tradition from "./pages/categories/Tradition";
+import Knowledge from "./pages/categories/Knowledge";
+import Crafts from "./pages/categories/Crafts";
+import Festivals from "./pages/categories/Festivals";
+import Arts from "./pages/categories/Arts";
 
 function App() {
   const { user } = useAuth()!;
@@ -36,6 +41,11 @@ function App() {
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
           <Route path="category" element={<CategoryPage />} />
+          <Route path="category/tradition" element={<Tradition />} />
+          <Route path="/category/arts" element={<Arts />} />
+          <Route path="category/knowledge" element={<Knowledge />} />
+          <Route path="category/crafts" element={<Crafts />} />
+          <Route path="category/festivals" element={<Festivals />} />
           {/* <Route path="category/:categoryName" element={<CategoryPage />} /> */}
           <Route
             path="login"
