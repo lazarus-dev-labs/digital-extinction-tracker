@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import app from "@/firebase";
 import { X, Calendar, User, FileText, CheckCircle, Trash2, ShieldCheck, Clock, Share2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const db = getFirestore(app);
 
@@ -63,8 +64,12 @@ export default function AdminDashboard() {
       const storyRef = doc(db, "stories", storyId);
       await updateDoc(storyRef, { approved: true });
       setStories((prev) => prev.map((s) => (s.id === storyId ? { ...s, approved: true } : s)));
-      setSelectedStory(null); 
-    } catch (err) { console.error("Error approving:", err); }
+      setSelectedStory(null);
+      toast.success("Story approved successfully!");
+    } catch (err) {
+      console.error("Error approving:", err);
+      toast.error("Failed to approve story. Please try again.");
+    }
   };
 
   const handleDeleteStory = async (storyId: string) => {
@@ -73,7 +78,11 @@ export default function AdminDashboard() {
       await deleteDoc(doc(db, "stories", storyId));
       setStories((prev) => prev.filter((s) => s.id !== storyId));
       setSelectedStory(null);
-    } catch (err) { console.error(err); }
+      toast.success("Story deleted successfully.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete story. Please try again.");
+    }
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -81,7 +90,11 @@ export default function AdminDashboard() {
     try {
       await deleteDoc(doc(db, "users", userId));
       setUsers((prev) => prev.filter((u) => u.id !== userId));
-    } catch (err) { console.error(err); }
+      toast.success("User deleted successfully.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete user. Please try again.");
+    }
   };
 
   const filteredUsers = users.filter((u) => 
@@ -284,7 +297,7 @@ export default function AdminDashboard() {
                       <td className="px-8 py-5 font-mono text-xs text-slate-400">{user.email || "NO_PATH"}</td>
                       <td className="px-8 py-5">
                         <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tighter border ${user.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border-white/10'}`}>
-                          {user.status || "Inactive"}
+                          {user.status || "inactive"}
                         </span>
                       </td>
                       <td className="px-8 py-5 text-right">
