@@ -29,8 +29,7 @@ import Arts from "./pages/categories/Arts";
 
 function App() {
   const { user } = useAuth()!;
-  // console.log(user["accessToken"]);
-
+  
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
