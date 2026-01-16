@@ -7,6 +7,7 @@ import { useAuth, type ExtendedUser } from "@/hooks/AuthContext";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 interface LoginFormInputs {
   email: string;
@@ -50,10 +51,13 @@ const Login = () => {
       if (!fullUser) throw new Error("No user data found");
 
       setUser(fullUser);
+      toast.success("Logged in successfully! Welcome back.");
       handleNavigation(fullUser);
     } catch (err) {
       console.error(err);
-      setError("Failed to login. Please check your credentials.");
+      const errorMessage = "Failed to login. Please check your credentials.";
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -80,10 +84,13 @@ const Login = () => {
       if (!fullUser) throw new Error("No user data found");
 
       setUser(fullUser);
+      toast.success("Logged in successfully! Welcome back.");
       handleNavigation(fullUser);
     } catch (err) {
       console.error("Google login error", err);
-      setError("Failed to login with Google.");
+      const errorMessage = "Failed to login with Google.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

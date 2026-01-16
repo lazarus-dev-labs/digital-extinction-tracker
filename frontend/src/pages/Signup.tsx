@@ -7,6 +7,7 @@ import { auth, googleProvider } from "../firebase";
 import type { SubmitHandler } from "react-hook-form"
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { toast } from "react-toastify";
 
 
 type FormInputs = {
@@ -42,6 +43,7 @@ const Signup = () => {
     setError("");
     if (data.password !== data.confirmPassword) {
       setError("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -49,11 +51,13 @@ const Signup = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
        // Add user to Firestore
       await addUserToFirestore(userCredential.user.uid, userCredential.user.email);
-
+      toast.success("Account created successfully! Welcome to Rune.");
       navigate("/dashboard"); // Redirect after successful signup
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Failed to create an account.");
+      const errorMessage = err.message || "Failed to create an account.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -66,10 +70,13 @@ const Signup = () => {
       const user = result.user;
       await addUserToFirestore(user.uid, user.email);
       
+      toast.success("Welcome to Rune! Your account has been created.");
       navigate("/dashboard"); // Redirect after successful signup
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Google signup failed.");
+      const errorMessage = err.message || "Google signup failed.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
