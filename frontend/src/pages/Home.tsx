@@ -4,11 +4,11 @@ import CardForHome from "../components/cards/CardForHome";
 import "../index.css"; 
 
 import HeroImg from "../assets/Front_Img.webp";
-import our_stories_img1 from "../assets/our_stories/Angampora_Secret_Maneuvers.webp"
-import our_stories_img2 from "../assets/our_stories/Archaic_Healing_Dialects.webp"
-import our_stories_img3 from "../assets/our_stories/Lost_Chena_Cultivation_Songs.webp"
-import our_stories_img4 from "../assets/our_stories/Harvest_Moon.webp"
-import our_stories_img5 from "../assets/our_stories/Wave_Reading_Navigation.webp"
+import our_stories_img1 from "../assets/our_stories/Tradition.webp"
+import our_stories_img2 from "../assets/our_stories/Arts.webp"
+import our_stories_img3 from "../assets/our_stories/Knowledge.webp"
+import our_stories_img4 from "../assets/our_stories/Crafts.webp"
+import our_stories_img5 from "../assets/our_stories/Festivals.webp"
 
 export default function Home() {
   const navigate = useNavigate();
@@ -18,53 +18,38 @@ export default function Home() {
   const stories = [
     {
       id: 1,
-      title: "The Ritual of the Harvest Moon",
-      description: "An ancient agricultural ceremony performed by elders in the central highlands to ensure a fertile season.",
-      image: our_stories_img4,
-      location: "Meemure",
-      risk: "High",
-      sourceAge: "88",
-      category: "Ritual"
+      slug: "tradition",
+      title: "Tradition & Rituals",
+      description: "Documenting endangered spiritual ceremonies and agricultural rituals passed down through generations, now at risk of being lost forever.",
+      image: our_stories_img1,
     },
     {
       id: 2,
-      title: "Archaic Healing Dialects",
-      description: "Specific chants used in folk medicine that contain words no longer found in modern dictionaries.",
+      slug: "arts",
+      title: "Arts & Performance",
+      description: "Preserving rare folk songs, traditional dance forms, and oral storytelling traditions that define our unique cultural identity.",
       image: our_stories_img2,
-      location: "Galle",
-      risk: "Critical",
-      sourceAge: "92",
-      category: "Language"
     },
     {
       id: 3,
-      title: "Lost Chena Cultivation Songs",
-      description: "Rhythmic verses sung by farmers to keep away wild animals and coordinate community labor.",
+      slug: "knowledge",
+      title: "Knowledge & Practices",
+      description: "Mapping ancient wisdom, from indigenous medicine to weather-reading techniques, before the last practitioners disappear.",
       image: our_stories_img3,
-      location: "Anuradhapura",
-      risk: "Medium",
-      sourceAge: "74",
-      category: "Folklore"
     },
     {
       id: 4,
-      title: "Angampora Secret Maneuvers",
-      description: "Defensive techniques and pressure point knowledge preserved within a single lineage of martial artists.",
-      image: our_stories_img1,
-      location: "Ratnapura",
-      risk: "High",
-      sourceAge: "81",
-      category: "Tradition"
+      slug: "crafts",
+      title: "Crafts & Industries",
+      description: "Recording the intricate techniques of dying artisanal crafts and sustainable local industries that lack modern successors.",
+      image: our_stories_img4,
     },
     {
       id: 5,
-      title: "Wave-Reading Navigation",
-      description: "Ancient methods used by coastal communities to predict weather patterns by observing sea currents.",
+      slug: "festivals",
+      title: "Festivals & Social Events",
+      description: "Tracking the decline of community-driven festivals and social gatherings that once formed the backbone of rural society.",
       image: our_stories_img5,
-      location: "Matara",
-      risk: "Medium",
-      sourceAge: "79",
-      category: "Knowledge"
     }
   ];
 
