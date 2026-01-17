@@ -1,0 +1,25 @@
+# Node / Bun
+config
+node_modules
+bun.lockb
+dist
+.cache
+.env
+*.log
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+*.sqlite3
+
+# Git
+.git
+.gitignore
+
+# Misc
+Dockerfile
+docker-compose.yml

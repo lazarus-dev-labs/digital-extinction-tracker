@@ -9,6 +9,7 @@ import {
   FaWhatsapp,
   FaXTwitter 
 } from "react-icons/fa6"; // Using Fa6 for the X (Twitter) icon
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,8 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Contact form submitted:", formData);
+    toast.success("Message sent successfully! We'll get back to you soon.");
+    setFormData({ name: "", email: "", subject: "", message: "" });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

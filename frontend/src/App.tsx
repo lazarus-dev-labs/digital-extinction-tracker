@@ -5,7 +5,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-// import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import Home from "./pages/Home";
 import About from "./pages/AboutUs";
 import Login from "./pages/Login";
@@ -29,8 +29,7 @@ import Arts from "./pages/categories/Arts";
 
 function App() {
   const { user } = useAuth()!;
-  // console.log(user["accessToken"]);
-
+  
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
@@ -72,17 +71,15 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      {/* <ToastContainer
+      <ToastContainer
+        theme="colored"
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
         draggable
-        toastClassName={() =>
-          "relative flex p-5 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer bg-[#0f172a] text-white"
-        }
-      /> */}
+      />
     </>
   );
 }
