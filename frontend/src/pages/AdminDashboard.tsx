@@ -372,7 +372,7 @@ export default function AdminDashboard() {
                       <span className="text-[9px] font-mono text-amber-500">QUARANTINED</span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 italic">by {story.author || "Anonymous"}</p>
+                  <p className="text-xs text-slate-400 italic">by {story.user_name || "Anonymous"}</p>
                   <div className="flex gap-2">
                     {!story.approved && (
                       <button onClick={() => handleApprove(story.id)} className="flex-1 py-2.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.1em] rounded-lg border border-emerald-500/20">Verify</button>
