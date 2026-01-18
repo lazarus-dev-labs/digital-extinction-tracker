@@ -19,7 +19,7 @@ interface PreserveFormData {
   title: string;
   language: string;
   category: string;
-  timePeriod: string;
+  time_period: string;
   description: string;
   tags: string[];
   user_id: string;
@@ -39,7 +39,7 @@ export default function Preserve() {
       title: "",
       language: "sinhala",
       category: "",
-      timePeriod: "",
+      time_period: "",
       description: "",
       tags: ["History", "SriLanka", "Rawana"],
       user_id: "",
@@ -82,7 +82,7 @@ export default function Preserve() {
     setValue("title", "");
     setValue("language", "sinhala");
     setValue("category", "");
-    setValue("timePeriod", "");
+    setValue("time_period", "");
     setValue("description", "");
     setValue("tags", []);
     setTagInput("");
@@ -246,7 +246,7 @@ export default function Preserve() {
                 Time Period
               </Label>
               <Controller
-                name="timePeriod"
+                name="time_period"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
@@ -264,7 +264,7 @@ export default function Preserve() {
                   </Select>
                 )}
               />
-              {errors.timePeriod && (
+              {errors.time_period && (
                 <span className="text-red-500 text-xs">
                   Time Period is required
                 </span>
