@@ -44,3 +44,5 @@ env
 .flaskenv
 .pytest_cache
 .vercel
+
+venv/
