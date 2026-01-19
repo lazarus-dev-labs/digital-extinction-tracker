@@ -1,3 +1,4 @@
+// frontend/src/pages/Preserve.tsx
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -11,10 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { api } from "@/api/api";
 import { auth } from "@/firebase";
-import type { SubmitHandler } from "react-hook-form";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 interface PreserveFormData {
   title: string;
   language: string;
@@ -22,8 +24,6 @@ interface PreserveFormData {
   time_period: string;
   description: string;
   tags: string[];
-  user_id: string;
-  user_name: string;
 }
 
 export default function Preserve() {
@@ -42,16 +42,12 @@ export default function Preserve() {
       time_period: "",
       description: "",
       tags: ["History", "SriLanka", "Rawana"],
-      user_id: "",
-      user_name: "",
     },
   });
 
   const tags = watch("tags");
-
   const [tagInput, setTagInput] = useState("");
 
-  /* -------------------- TAGS -------------------- */
   const addTag = (tag: string) => {
     const cleanTag = tag.trim();
     if (!cleanTag || tags.includes(cleanTag) || tags.length >= 8) return;
@@ -59,10 +55,7 @@ export default function Preserve() {
   };
 
   const removeTag = (tagToRemove: string) => {
-    setValue(
-      "tags",
-      tags.filter((tag) => tag !== tagToRemove)
-    );
+    setValue("tags", tags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -71,10 +64,10 @@ export default function Preserve() {
       addTag(tagInput);
       setTagInput("");
     }
-
     if (e.key === "Backspace" && !tagInput && tags.length > 0) {
-      const lastTag = tags[tags.length - 1];
-      if (lastTag) removeTag(lastTag);
+      if (tags.length > 0) {
+        removeTag(tags[tags.length - 1]!);
+      }
     }
   };
 
@@ -88,98 +81,68 @@ export default function Preserve() {
     setTagInput("");
   };
 
-  const onSubmit: SubmitHandler<PreserveFormData> = async (data) => {
+  const onSubmit = async (data: PreserveFormData) => {
     try {
-      const user = await auth.currentUser;
-
-      const token = await user?.getIdToken();
-
-      if (!user || !token) {
-        console.error("No user logged in");
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("You must be logged in to submit.");
         return;
       }
 
-      setValue("user_id", user.uid);
-      setValue("user_name", user.displayName ?? user.email ?? "");
+      const token = await user.getIdToken();
 
       const payload = {
         ...data,
         user_id: user.uid,
-        user_name: user.displayName ?? user.email,
+        user_name: user.displayName ?? user.email ?? "",
       };
 
-      await api.post('stories', {
+      await api.post("stories", {
         json: payload,
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      console.log("Story submitted successfully!");
+      toast.success("Story submitted successfully!");
       handleClear();
-      // Optionally show success message or redirect
     } catch (error) {
       console.error("Error submitting story:", error);
-      // Handle error (show toast, etc.)
+      toast.error("Failed to submit story.");
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-6 sm:p-10
-      bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]
-      from-[#f8f5f1] via-[#efe8df] to-[#e7ded3]"
-    >
-      <div
-        className="
-          w-full max-w-3xl rounded-3xl
-          bg-white/80 backdrop-blur-md
-          shadow-[0_20px_50px_rgba(90,60,30,0.15)]
-          border border-[#e6dccf]
-          p-8 sm:p-12
-        "
-      >
-        {/* HEADER */}
+    <div className="min-h-screen flex items-center justify-center p-6 sm:p-10
+      bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#f8f5f1] via-[#efe8df] to-[#e7ded3]">
+      <div className="w-full max-w-3xl rounded-3xl bg-white/80 backdrop-blur-md shadow-[0_20px_50px_rgba(90,60,30,0.15)] border border-[#e6dccf] p-8 sm:p-12">
+        {/* Header */}
         <div className="mb-10">
           <h2 className="text-4xl sm:text-5xl font-bold text-[#3e2723] leading-tight">
             Every story matters.
             <span className="block text-[#8b4513]">Preserve it.</span>
           </h2>
           <p className="mt-3 text-sm text-[#6d5c4a] max-w-xl">
-            Help protect fading traditions, memories, and voices for future
-            generations.
+            Help protect fading traditions, memories, and voices for future generations.
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* TITLE & LANGUAGE */}
+          {/* Title & Language */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">
-                Title
-              </Label>
-              <Input
-                {...register("title", { required: true })}
-                className="h-11 rounded-xl bg-[#faf8f5]"
-                placeholder="Title"
-              />
-              {errors.title && (
-                <span className="text-red-500 text-xs">Title is required</span>
-              )}
+              <Label className="text-sm font-semibold text-[#5d4e37]">Title</Label>
+              <Input {...register("title", { required: true })} className="h-11 rounded-xl bg-[#faf8f5]" placeholder="Title" />
+              {errors.title && <span className="text-red-500 text-xs">Title is required</span>}
             </div>
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">
-                Language
-              </Label>
+              <Label className="text-sm font-semibold text-[#5d4e37]">Language</Label>
               <Controller
                 name="language"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value || "sinhala"}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value || "sinhala"}>
                     <SelectTrigger className="h-11 rounded-xl bg-[#faf8f5]">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
@@ -191,20 +154,14 @@ export default function Preserve() {
                   </Select>
                 )}
               />
-              {errors.language && (
-                <span className="text-red-500 text-xs">
-                  Language is required
-                </span>
-              )}
+              {errors.language && <span className="text-red-500 text-xs">Language is required</span>}
             </div>
           </div>
 
-          {/* CATEGORY & TIME */}
+          {/* Category & Time */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">
-                Category
-              </Label>
+              <Label className="text-sm font-semibold text-[#5d4e37]">Category</Label>
               <Controller
                 name="category"
                 control={control}
@@ -215,36 +172,20 @@ export default function Preserve() {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-[#e6dccf] shadow-xl rounded-xl">
-                      <SelectItem value="Tradition & Rituals">
-                        Tradition & Rituals
-                      </SelectItem>
-                      <SelectItem value="Arts & Performance">
-                        Arts & Performance
-                      </SelectItem>
-                      <SelectItem value="Knowledge & Practices">
-                        Knowledge & Practices
-                      </SelectItem>
-                      <SelectItem value="Crafts & Industries">
-                        Crafts & Industries
-                      </SelectItem>
-                      <SelectItem value="Festivals & Social Events">
-                        Festivals & Social Events
-                      </SelectItem>
+                      <SelectItem value="Tradition & Rituals">Tradition & Rituals</SelectItem>
+                      <SelectItem value="Arts & Performance">Arts & Performance</SelectItem>
+                      <SelectItem value="Knowledge & Practices">Knowledge & Practices</SelectItem>
+                      <SelectItem value="Crafts & Industries">Crafts & Industries</SelectItem>
+                      <SelectItem value="Festivals & Social Events">Festivals & Social Events</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
-              {errors.category && (
-                <span className="text-red-500 text-xs">
-                  Category is required
-                </span>
-              )}
+              {errors.category && <span className="text-red-500 text-xs">Category is required</span>}
             </div>
 
             <div>
-              <Label className="text-sm font-semibold text-[#5d4e37]">
-                Time Period
-              </Label>
+              <Label className="text-sm font-semibold text-[#5d4e37]">Time Period</Label>
               <Controller
                 name="time_period"
                 control={control}
@@ -264,15 +205,11 @@ export default function Preserve() {
                   </Select>
                 )}
               />
-              {errors.time_period && (
-                <span className="text-red-500 text-xs">
-                  Time Period is required
-                </span>
-              )}
+              {errors.time_period && <span className="text-red-500 text-xs">Time Period is required</span>}
             </div>
           </div>
 
-          {/* TAGS */}
+          {/* Tags */}
           <div>
             <Label className="text-sm font-semibold text-[#5d4e37]">Tags</Label>
             <Input
@@ -282,64 +219,33 @@ export default function Preserve() {
               onKeyDown={handleTagKeyDown}
               className="h-11 rounded-xl bg-[#faf8f5] mt-2"
             />
-
             <div className="flex flex-wrap gap-2 mt-3">
               {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="
-                    flex items-center gap-2
-                    px-4 py-1 rounded-full
-                    bg-[#f4ede4]
-                    text-[#5c3a21]
-                    text-xs font-medium
-                  "
-                >
+                <span key={tag} className="flex items-center gap-2 px-4 py-1 rounded-full bg-[#f4ede4] text-[#5c3a21] text-xs font-medium">
                   {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="hover:text-[#3e2723]"
-                  >
-                    ×
-                  </button>
+                  <button type="button" onClick={() => removeTag(tag)} className="hover:text-[#3e2723]">×</button>
                 </span>
               ))}
             </div>
           </div>
 
-          {/* DESCRIPTION */}
+          {/* Description */}
           <div>
-            <Label className="text-sm font-semibold text-[#5d4e37]">
-              Description
-            </Label>
+            <Label className="text-sm font-semibold text-[#5d4e37]">Description</Label>
             <Textarea
               {...register("description", { required: true })}
               className="min-h-[180px] rounded-xl bg-[#faf8f5]"
               placeholder="Tell the story..."
             />
-            {errors.description && (
-              <span className="text-red-500 text-xs">
-                Description is required
-              </span>
-            )}
+            {errors.description && <span className="text-red-500 text-xs">Description is required</span>}
           </div>
 
-          {/* BUTTONS */}
+          {/* Buttons */}
           <div className="flex gap-4 pt-4">
-            <Button
-              type="submit"
-              className="bg-[#8b4513] hover:bg-[#6f3510] text-white rounded-xl px-8 h-11"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="bg-[#8b4513] hover:bg-[#6f3510] text-white rounded-xl px-8 h-11" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClear}
-              className="border-[#cbb59a] text-[#6d4c32] rounded-xl px-8 h-11"
-            >
+            <Button type="button" variant="outline" onClick={handleClear} className="border-[#cbb59a] text-[#6d4c32] rounded-xl px-8 h-11">
               Clear
             </Button>
           </div>

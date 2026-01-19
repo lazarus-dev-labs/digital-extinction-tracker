@@ -21,19 +21,27 @@ db: Optional[Client] | None = None
 embedding_model: SentenceTransformer = SentenceTransformer("all-MiniLM-L6-v2")
 
 
-def verify_firebase_token(request: Request) -> dict | None:
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        raise HTTPException(status_code=401, detail="Missing Authorization")
-    parts = auth_header.split()
-    if parts[0] != "Bearer" or len(parts) != 2:
-        raise HTTPException(status_code=401, detail="Invalid Authorization")
-    token = parts[1]
+def verify_firebase_token(token: str) -> dict | None:
+    """
+    Verify Firebase ID token and return decoded user information.
+    
+    Args:
+        token (str): The Firebase ID token string (without "Bearer " prefix)
+        
+    Returns:
+        dict: Decoded token containing user info (uid, email, etc.)
+        
+    Raises:
+        HTTPException: If token is invalid or verification fails
+    """
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing token")
+    
     try:
         decoded_token = auth.verify_id_token(token)
         return decoded_token
     except Exception as e:
-        raise HTTPException(status_code=401, detail=str(e))
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
 def init_firebase() -> None:
@@ -133,7 +141,11 @@ def digital_reference_rarity(text: str, lang: str) -> List[int | float]:
 
 # Vectorize text
 def embed_text(text: str) -> np.ndarray:
-    vec = embedding_model.encode([text])
+    """
+    Generate embedding vector for text.
+    Returns a 1D numpy array (not nested).
+    """
+    vec = embedding_model.encode(text)  # Remove list wrapper to get 1D array
     return vec.astype("float32")
 
 
@@ -148,8 +160,12 @@ def load_local_story_vectors() -> List[IndexFlatL2 | int]:
             data = doc.to_dict()
             embedding = data.get("embedding")
             if embedding:
-                # Convert to float32 array, just in case
-                vectors.append(np.array(embedding, dtype="float32"))
+                # Convert to float32 array
+                vec = np.array(embedding, dtype="float32")
+                # Ensure it's 1D - if it's already 1D, this does nothing
+                if vec.ndim > 1:
+                    vec = vec.flatten()
+                vectors.append(vec)
 
         if not vectors:
             return [None, 0]
@@ -165,7 +181,7 @@ def load_local_story_vectors() -> List[IndexFlatL2 | int]:
         return [index, len(vectors)]
 
     except Exception as e:
-        print("Encountered and Error while receiving local story vectors", e)
+        print("Encountered an Error while receiving local story vectors", e)
         raise e
 
 
@@ -177,7 +193,9 @@ def local_similarity_score(text: str) -> float:
         return 1.0  # no local knowledge = high risk
 
     query_vec = embed_text(text)
-    D, _ = index.search(query_vec, k=3)
+    # FAISS search expects 2D array (1 query x dimensions)
+    query_vec_2d = query_vec.reshape(1, -1)
+    D, _ = index.search(query_vec_2d, k=3)
 
     min_distance = float(D[0][0])
 
