@@ -1,35 +1,25 @@
-# Use official slim Python 3.11 image
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /backend
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libjpeg-dev \
-    libpng-dev \
+RUN apt-get update && apt-get install -y build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only requirements first for caching
+# Copy Python requirements
 COPY backend/requirements.txt ./
 
-# Install heavy packages separately (PyTorch + FAISS CPU)
-RUN pip install --no-cache-dir \
-    torch==2.9.1 \
-    torchvision==0.15.2 \
-    torchaudio==2.0.2 \
-    faiss-cpu==1.13.2 \
-    --index-url https://download.pytorch.org/whl/cpu
+# Install CPU-only PyTorch first
+RUN pip install --no-cache-dir torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
 
-# Install remaining dependencies
+# Install remaining backend dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source code
+# Copy backend code
 COPY backend/ ./
 
-# Expose port for FastAPI
-EXPOSE 80
+# Expose FastAPI port
+EXPOSE 8000
 
-# Run FastAPI with Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+# Run FastAPI dev server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
