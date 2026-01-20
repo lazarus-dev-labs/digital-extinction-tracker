@@ -2,11 +2,8 @@ FROM python:3.11-slim
 
 WORKDIR /backend
 
-# Install system dependencies (merged)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libjpeg-dev \
-    libpng-dev \
+# Install system dependencies
+RUN apt-get update && apt-get install -y build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Python requirements
